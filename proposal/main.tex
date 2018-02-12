@@ -62,6 +62,8 @@ Before working with these datasets we foresee some challenges and roadblocks we 
     \item The largely varying nature of the datasets prohibits the use of a standard model for all QA datasets. We will try to construct a more generalizable approach which can perform well on each of these datasets while simultaneously experimenting with more tailored approaches for each of the datasets.
 \end{enumerate}
 
+\pagebreak
+
 \section{Individual Responsibilities}
 In this section we detail the components each of us wants to work on and a basic outline of how we want to go about solving that specific problem.\\
 \subsection{Vasu}
@@ -79,6 +81,9 @@ In light of this the parts I want to work on are:\\
     \item \textbf{Document and sentence ranking} is also something that interests me and I wish to try out triplet ranking loss based siamese ranking networks and other novel architectures to see if we can improve the document and sentence ranking techniques being used in most present architectures. 
     \item I also intend to try out \textbf{ensembling} neural and modularized non neural architectures and see if there respective strengths can be combined into a joint ensemble model which can distill their strengths into a single model for Question Answering.
 \end{itemize}
+
+\pagebreak
+
 \subsection{Srividya Pranavi}
 I am interested in working at the intersection of Information Retrieval and Neural Text Generation models, leveraging both the techniques to build a Question Answering system aiming at improving human readability and accuracy of the correct answers. I want to understand various modules in QA pipeline and improve on the existing BioASQ architecture. I am also interested in exploring different neural model techniques for MS Marco dataset as the data set is large and it is better aligned to real world queries.In this regard, I would like to focus on:
 \begin{itemize}
@@ -90,16 +95,30 @@ I am interested in working at the intersection of Information Retrieval and Neur
     \item \textbf{Memory Networks}: I want to explore Dynamic Memory Networks, a recent neural architecture (also used in MS Marco baseline) which processes input sequences and questions, forms episodic memories, and generates relevant answers. I want to study its relevance in the context of BioASQ dataset before implementing this end to end model. 
 \end{itemize}
 
+\pagebreak
+
 \subsection{Nitish Kulkarni}
 
-My primary hypothesis is that the architecture of a well-performing Question Answering system would be highly dependent on and specific to the dataset (size and nature), beyond tuning of model hyper-parameters. More specifically, for smaller datasets, traditional IR techniques and extractive summarization methods would yield better performance while for larger datasets, neural ranking algorithms and abstractive text summarization would work better. I am also keen on exploring the interdepedency of the different modules in the QA pipeline, and understand the behaviour of different combinations of specific modules. 
+My primary hypothesis is that there can be a generalized architecture of a well-performing Question Answering system would whose parameters can be tuned based on the specific data-set (size and nature) and the evaluation mechanism. I am also keen on exploring the interdependence of the different modules in the QA pipeline, and understand the behaviour of different combinations of specific modules. \\
 
-It is with these goals that I propose to implement the following techniques:
+With these goals in mind, I intend to work on the following hypotheses:
+
+\begin{enumerate}
+
+    \item[] \textit{Hypothesis 1} : A well-performing QA system would comprise an ensemble of unsupervised and supervised document retrieval models. For smaller data-sets, the traditional IR techniques would yield better performance, while for large data-sets, LETOR and neural ranking algorithms would be better alternatives.
+    
+    \item[] \textit{Hypothesis 2} : The retrieval performance as well as text summarization can be enhanced by incorporating unsupervised models trained on larger unlabelled data-sets. This could be implemented by learning distributed representations for domain-specific words or sentences to capture syntactic and semantic relationships, or by training generative models for assessing the quality of summarization.
+    
+    \item[] \textit{Hypothesis 3} : The summarization of an answer can be improved by incorporating the evaluation criterion (or a proxy thereof) in the objective/loss function being optimized. A combination of extractive and abstractive techniques might yield a better over-all summarization performance.
+    
+\end{enumerate}
+
+To verify the stated hypotheses, I propose to implement the following techniques:
 
 \begin{itemize}
 \item \textbf{Query Processing}
 
-I wish to explore the effect of variants of query processing techniques such as stemming, POS tagging, normalization and query term expansion on the quality of the retrieved snippets. I would also experiment with different query restructuring and expansion methods using pseudo relevance feedback and term expansion.
+I wish to explore the effect of variants of query processing techniques such as stemming, POS tagging, normalization and query term expansion on the quality of the retrieved snippets. I also plan to experiment with different query restructuring and expansion methods using pseudo relevance feedback and term expansion.
 
 \item \textbf{Relevance Ranking}
 
@@ -113,9 +132,11 @@ For many of the answer types such as yes/no, factoid and list, I wish to see if 
 
 \item \textbf{Text Summarization}
 
-Since abstractive summarization methods typically tend to yield low ROUGE-N scores and extractive models have poor human readibility, I intend to work on developing a model that's a cross between the two, with a loss function to optimize for more meaningful and smoother transitions while retaining many n-grams from the extracted sentences. At the same time, I am also interested in exploring more advanced extractive methods based on neural architectures and graphical models.
+Since abstractive summarization methods typically tend to yield low ROUGE-N scores and extractive models have poor human readibility, I intend to work on developing a model that's a cross between the two, with a loss function to optimize for more meaningful and smoother transitions while retaining many n-grams from the extracted sentences. One way to implement this is by combining a language model for readable summary with policy-learning to maximize ROUGE using reinforcement learning \cite{DBLP}. At the same time, I am also interested in exploring more advanced extractive methods based on neural architectures and graphical models.
 
 \end{itemize}
+
+\pagebreak
 
 \subsection{Gabriel Bayomi}
 I'm particularly interested on the end of the Question Answering pipeline: learning to rank, text summarization via abstraction or extraction and the exploration of new techniques to improve the final results given the information retrieved from the previous method. Moreover, I want to explore the current platform of BioASQ and understand the overall architecture in order to tackle small problems that could have a strong impact (following the pareto principle where 80\% of the issues might come from 20\% of the causes). These methods include:
@@ -127,12 +148,11 @@ I'm particularly interested on the end of the Question Answering pipeline: learn
     
     \item \textbf{Abstraction-based Methods for Summarization}: Abstraction methods, usually based on neural networks, are still an open and difficult language problem, due to the many issues related to generation methods: guaranteeing a reasonable, grammatically and semantically correct text output is a non-trivial process. However, the capability of generating answers that are not necessarily dependent on extracted excerpts of text has the potential of better human readability as the process is closer to what an actual human would produce. I believe that the careful combination of abstraction and extraction methods could provide interesting results.
     
-    \item \textbf{General Improvements}: Tiling + Search/IR: I believe that there still gaps to explore the full information given by queries (query expansion), improving the generalization of the IR methods. Moreover, I believe it's possible to upgrade sentence tiling techniques. For example, understanding how LSA could improve the current structure. I'm a firm believer of the Pareto Principle in relation to project development. Therefore, there are likely small changes on the current baseline environments of BioASQ and MS MARCO that could potentially have more impact than big systematic changes. I intend to pursue these tasks during the semester.  
-
-    
-    
+    \item \textbf{General Improvements}: Tiling + Search/IR: I believe that there still gaps to explore the full information given by queries (query expansion), improving the generalization of the IR methods. Moreover, I believe it's possible to upgrade sentence tiling techniques. For example, understanding how LSA could improve the current structure. I'm a firm believer of the Pareto Principle in relation to project development. Therefore, there are likely small changes on the current baseline environments of BioASQ and MS MARCO that could potentially have more impact than big systematic changes. I intend to pursue these tasks during the semester. 
     
 \end{itemize}
+
+\pagebreak
 
 \section{Tentative Timeline}
 % \begingroup
@@ -155,15 +175,15 @@ I'm particularly interested on the end of the Question Answering pipeline: learn
 \begin{table}[H]
     \centering
         
-        \begin{tabular}{|c|c|l|} \hline
+    \begin{tabular}{|c|c|l|} \hline
         \textbf{Week} & \textbf{Date}   & \textbf{Task} \\ \hline
         1    & 14 Feb & Explore code and dataset \\
         2    & 21 Feb & Get an initial working end-to-end system \\ %
         3    & 28 Feb & IR Module Enhancements \\
-        4    & 5 March & LETOR + Overall Improved Working system for 1^{st} submission \\
-        5    & 19 March & Improved Extractive Summary + Neural Retrieval Methods, tuned system for 2^{nd} submission \\
+        4    & 5 March & LETOR + Overall Improved Working system for $1^{st}$ submission \\
+        5    & 19 March & Improved Extractive Summary + Neural Retrieval Methods, tuned system for $2^{nd}$ submission \\
         6    & 25 March & TBD \\ \hline
-        \end{tabular}
+    \end{tabular}
     % \caption{Caption}
     % \label{tab:my_label}
 \end{table}

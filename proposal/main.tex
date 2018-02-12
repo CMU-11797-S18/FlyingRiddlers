@@ -1,15 +1,11 @@
 \documentclass{article}
+
 \usepackage[utf8]{inputenc}
 \usepackage{graphicx}
 \usepackage[margin=0.85in]{geometry}
 \usepackage{float}
-\usepackage{longtable}
 \usepackage{url}
-\usepackage{float}
 
-\usepackage{fourier, heuristica}
-\usepackage{array, booktabs, longtable}
-\usepackage[x11names,table]{xcolor}
 \usepackage{caption}
 \DeclareCaptionFont{blue}{\color{LightSteelBlue3}}
 \newcommand{\foo}{\color{LightSteelBlue3}\makebox[0pt]{\textbullet}\hskip-0.5pt\vrule width 1pt\hspace{\labelsep}}
@@ -155,22 +151,6 @@ I'm particularly interested on the end of the Question Answering pipeline: learn
 \pagebreak
 
 \section{Tentative Timeline}
-% \begingroup
-% \renewcommand\arraystretch{1.4}\arrayrulecolor{LightSteelBlue3}
-% \captionsetup{font=blue, labelfont=sc, labelsep=quad,
-%               skip=0.5\baselineskip}
-
-% \begin{longtable}{@{\,}r <{\hskip 2pt} | r !{\foo} >{\raggedright\arraybackslash}p{5cm}}
-
-% % header and footer information
-% \caption{Timeline}\\
-% \toprule
-% \addlinespace[1.5ex]
-% \endhead
-
-% \addlinespace[1.5ex]
-% \bottomrule
-% \endlastfoot
 
 \begin{table}[H]
     \centering
@@ -184,8 +164,7 @@ I'm particularly interested on the end of the Question Answering pipeline: learn
         5    & 19 March & Improved Extractive Summary + Neural Retrieval Methods, tuned system for $2^{nd}$ submission \\
         6    & 25 March & TBD \\ \hline
     \end{tabular}
-    % \caption{Caption}
-    % \label{tab:my_label}
+
 \end{table}
 
 \bibliography{references}

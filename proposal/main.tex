@@ -81,14 +81,28 @@ In light of this the parts I want to work on are:\\
 \pagebreak
 
 \subsection{Srividya Pranavi}
-I am interested in working at the intersection of Information Retrieval and Neural Text Generation models, leveraging both the techniques to build a Question Answering system aiming at improving human readability and accuracy of the correct answers. I want to understand various modules in QA pipeline and improve on the existing BioASQ architecture. I am also interested in exploring different neural model techniques for MS Marco dataset as the data set is large and it is better aligned to real world queries.In this regard, I would like to focus on:
+I am interested in working at the intersection of Information Retrieval and Neural Text Generation models, leveraging both the techniques to build a Question Answering system aiming at improving human readability and accuracy of the correct answers. I want to understand various modules in QA pipeline and improve on the existing BioASQ architecture. I am also interested in exploring different neural model techniques for MS Marco dataset as the data set is large and it is better aligned to real world queries.
+
+\begin{enumerate}
+\item[]\textit{General Hypothesis}: A QA system that provides accurate, non-repetitive and human readable answers must be supported by a strong Information Retrieval system and abstractive methods.
+
+\item[]\textit{Specific Hypothesis 1}: Ranking of an IR system both at the snippet level and the sentence level can be enhanced using better retrieval algorithms, Learning to Rank Models. LeToR models can be trained using previous year's data and the relevance document information provided.
+
+\item[]\textit{Specific Hypothesis 2}: Diversification plays a significant role, as the answer that covers more intents, the better. This retrieval module should ideally take care of repetition.
+
+\textit{Specific Hypothesis 3}: Human readability is a harder problem to tackle with. There are two possible methods I plan to try, paraphrasing and text-summarization. I intend to do both at the last step of the pipeline based on my general hypothesis.
+\end{enumerate}
+
+In this regard, I would like to focus on:
 \begin{itemize}
     \item \textbf{Query Reformulation}: I would like to work on query reformulation by expanding the original query with potential query terms.This method primarily suits MS Marco dataset where the queries are from real users. Real world queries are messy, short and ambiguous. Hence the need of query expansion comes into play.I would like to implement the standard pseudo relevance feedback (Okapi BM25) based query expansion.
-    \item \textbf{Enhanced Retrieval using BM25}: I want to expand the original relevant snippet set by using an enhanced retrieval algorithm like BM25 which takes into account both the term frequency and inverse document frequency normalizing over document length. The intuition is to not limit to the relevant snippets and documents given originally, rather expanding it using other information sources. 
-    \item \textbf{Diversification using xQUAD}: I plan to explore diversification methods that explicitly diversify the results in contrast to Maximum Marginal Relevance method which does an implicit diversification. The main idea is to rank documents in the order of maximum coverage and minimum redundancy or repetition.xQUAD is proven to give good results when combined with BM25 retrieval method, the primary reason to explore this combination.
-    \item \textbf{Text Summarization}: I intend to explore different summarization techniques both extractive and abstractive (sequence to sequence learning, Generative Adversarial Network based approach) for answer generation, to improve sentence tiling for better human readability.
-    \item \textbf{Paraphrasing using Neural Models}: Paraphrasing is important in the context of human readability as most of the extracted text is not human readable. So, as a last step in the pipeline, I want to try generating paraphrases of the extracted answer which can help a human understand the clinical jargon in simple terms.There are different neural architectures proposed to generate paraphrases which I would explore during the coursetime.
-    \item \textbf{Memory Networks}: I want to explore Dynamic Memory Networks, a recent neural architecture (also used in MS Marco baseline) which processes input sequences and questions, forms episodic memories, and generates relevant answers. I want to study its relevance in the context of BioASQ dataset before implementing this end to end model. 
+    \item \textbf{Enhanced Retrieval using BM25}: I want to expand the original relevant snippet set by using an enhanced retrieval algorithm like BM25 which takes into account both the term frequency and inverse document frequency normalizing over document length. The intuition is to not limit to the relevant snippets and documents given originally, rather expanding it using other information sources.
+    Metrics: MAP, P@5
+    \item \textbf{Diversification using xQUAD}: I plan to explore diversification methods that explicitly diversify the results in contrast to Maximum Marginal Relevance method which does an implicit diversification. The main idea is to rank documents in the order of maximum coverage and minimum redundancy or repetition.xQUAD is proven to give good results when combined with BM25 retrieval method, the primary reason to explore this combination. 
+    Metrics : NDCG, P-IA@5
+    \item \textbf{Text Summarization}: I intend to explore different summarization techniques both extractive and abstractive (sequence to sequence learning, Generative Adversarial Network based approach) for answer generation, to improve sentence tiling for better human readability. Metrics: Rouge-N
+    \item \textbf{Paraphrasing using Neural Models}: Paraphrasing is important in the context of human readability as most of the extracted text is not human readable. So, as a last step in the pipeline, I want to try generating paraphrases of the extracted answer which can help a human understand the clinical jargon in simple terms.There are different neural architectures proposed to generate paraphrases which I would explore during the course time.
+    \item \textbf{Memory Networks}: I want to explore Dynamic Memory Networks, a recent neural architecture (also used in MS Marco baseline) which processes input sequences and questions, forms episodic memories, and generates relevant answers. I intend to try this model for MS Marco data set along with exploring its relevance in the context of BioASQ dataset before implementing this end to end model. 
 \end{itemize}
 
 \pagebreak

@@ -6,3 +6,5 @@ The project proposal can be found [here](https://github.com/CMU-11797-S18/Watson
 
 Project Updates:
 * [02/19](https://docs.google.com/presentation/d/1aLwJT302TH5ZhVIQjj860eRKcr3LQcB0KdOSvqcu500/edit?usp=sharing)
+
+* [02/26](https://docs.google.com/presentation/d/1ArEvsLm-3wD596bpSrFqFck3-yLqdHOgVRGrJscAn1c/edit?usp=sharing)

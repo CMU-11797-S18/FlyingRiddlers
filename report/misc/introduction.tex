@@ -1,0 +1,31 @@
+
+% \begin{abstract}
+% In this paper, we present a novel Biomedical Question Answering system, \textit{BioAMA}: ``Biomedical Ask Me Anything" on task 5b of the annual BioASQ challenge \cite{bioasq}. In this work, we focus on a wide variety of question types including factoid, list based, summary and yes/no type questions that generate both exact and well-formed `ideal' answers. For summary-type questions, we combine effective IR-based techniques for retrieval and diversification of relevant snippets for a question to create an end-to-end system which achieves a ROUGE-2 score of 0.72 and a ROUGE-SU4 score of 0.71 on ideal answer questions (7\%  improvement over the previous best model). Additionally, we propose a novel NLI-based framework to answer the yes/no questions. To train the NLI model, we also devise a transfer-learning technique by cross-domain projection of word embeddings. Finally, we present a two-stage approach to address the factoid and list type questions by first generating a candidate set using NER taggers and ranking them using both supervised or unsupervised techniques.
+
+% \end{abstract}
+
+\section{Introduction}
+
+In the era of ever advancing medical sciences and the age of the internet, a remarkable amount of medical literature is constantly being posted online. This has led to a need for an effective retrieval and indexing system which can allow us to extract meaningful information from these vast knowledge sources. One of the most effective and natural ways to leverage this huge amount of data in real life is to build a Question Answering system which will allow us to directly query this data and extract meaningful and structured information in a human readable form. To that end, we present a comprehensive investigation into different types of QA systems based on question and answer types, as well as analyze the merits and demerits of having a modularized question-type based system as opposed to an end-to-end QA system.
+
+\subsection{General Hypothesis}
+
+
+\subsection{Scope}
+
+% In this paper, we present  an end-to-end question answering system designed to handle the large variety of question types present in the BioASQ dataset which we call as ``\textit{BioAMA}: Biomedical Ask Me Anything".   \\
+Our key novel contributions in this paper are:
+\begin{enumerate}
+    \item \textbf{State of the art result on ideal answer questions}: Our proposed \textit{BioAMA} system attains state of the art results in automatic evaluation measures for the ideal answer questions in Task 5b of the BioASQ dataset, yielding a 7\%  improvement over the previous state of the art system \cite{khyati-paper}.
+    \item \textbf{Novel framework for Yes/No type QA}: 
+    We introduce a novel NLI-based approach for answering the Yes/No style questions in the BioASQ dataset. We model these questions as a Textual Entailment (TE) problem and use Hierarchical Convolutional Neural Network based Infersent models \cite{Infersent} to answer this type of question. To address the challenge of inadequate training data, we also introduce a novel embedding projection technique which allows for effective transfer learning from models trained on larger datasets with a different vocabulary to work on the much smaller BioASQ dataset.
+    \item \textbf{A novel two-stage approach to answer Factoid and List type questions}: 
+    By using an ensemble of biomedical NER taggers to generate a candidate answer set, we devise unsupervised and supervised ranking algorithms to generate the final predictions.
+    \item \textbf{Improved Maximum Marginal Relevance (MMR) framework}: We improve upon the MMR framework for relevant sentence selection from the chosen snippets. The use of MMR for sentence selection was introduced in the work of Chandu et al. \shortcite{khyati-paper}. We improve upon this framework by experimenting with a number of more informative similarity metrics to replace and improve upon the baseline Jaccard similarity metric.
+
+\end{enumerate}
+    %\item \textbf{Incorporating Information retrieval in the Question Answering pipeline}:
+    %We incorporate Indri and BM25 based features in our pipeline to allow for effective information retrieval from the biomedical knowledgebase which allows us to choose the snippets which are most relevant to a given question. 
+    %\item \textbf{Statistical ranking models}: We use the powerful LeTOR framework to allow for ranking of our snippets chosen by the information retrieval mechanism. This allows us to maximize the information we extract from the snippets which are deemed more relevant to a specific question. This also blends in well with our MMR framework which makes use of the ranking framework to extract the most relevant and non-repetitive information from the chosen snippets.
+    
+    %The rest of the paper is organized as follows. Section \ref{lit} presents the prior work on this problem followed by details of the BioASQ challenge and dataset in Section \ref{Dataset}. We present our approach and results for the ideal answer type questions in Section \ref{approach1} and for the exact answer type generation in Section \ref{approach2}. Finally we present the conclusions and future directions of our work in Section \ref{future}.

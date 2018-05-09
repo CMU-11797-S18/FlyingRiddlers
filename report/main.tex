@@ -1,0 +1,60 @@
+\documentclass[10pt]{article}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{bm}
+\usepackage{enumerate}
+% \usepackage{fancyvrb}
+\usepackage[top=1in, bottom=1in, left=1in, right=1in]{geometry}
+\usepackage{hyperref}
+\hypersetup{
+    colorlinks=true,
+}
+
+\usepackage{bbm}
+\usepackage{color}
+\usepackage{enumitem}
+\usepackage{xcolor}
+\usepackage{float}
+\usepackage{subcaption}
+\usepackage{graphicx}
+
+\usepackage{caption}
+\DeclareCaptionFont{blue}{\color{LightSteelBlue3}}
+\newcommand{\foo}{\color{LightSteelBlue3}\makebox[0pt]{\textbullet}\hskip-0.5pt\vrule width 1pt\hspace{\labelsep}}
+
+\date{\today}
+\title{
+11-797: Question Answering \\
+Final Report \\[15pt]
+Team: The Flying Riddlers 
+}
+
+\author{
+    Vasu Sharma,
+    Nitish Kulkarni, 
+    Srividya Pranavi Potharaju,
+    Gabriel Bayomi \\
+    Language Technologies Institute \\
+    Carnegie Mellon University
+}
+
+\begin{document}
+\maketitle
+
+\input{misc/introduction}
+\input{misc/relatedwork}
+\input{misc/dataset}
+
+\input{system/yesno}
+\input{system/factoidlist}
+\input{system/ideal}
+\input{system/endtoend}
+
+\input{misc/conclusion}
+
+\bibliography{references}
+\bibliographystyle{acm}
+
+\appendix
+
+\end{document}

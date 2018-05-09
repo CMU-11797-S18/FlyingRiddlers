@@ -5,6 +5,7 @@ Most of the state-of-the-art models for this task involve training end-to-end de
 
 For devising the model and evaluation, we primarily focused on factoid type questions since the methodology for the list-type question would be largely similar and different only in the number of top entities returned. 
 
+
 \begin{table}[h]
     \centering
     \begin{tabular}{cccc} \hline
@@ -47,6 +48,13 @@ For devising the model and evaluation, we primarily focused on factoid type ques
     \label{tab:comparison_results}
 \end{table*}
 \vspace{-0.3cm}
+
+
+\subsubsection{Initial Hypotheses}
+
+
+dsasadsa
+
 \subsubsection{Candidate Selection}
 
 We found that the most critical step in the answer generation process is to identify the set of potential answer candidates that can be fed into a classifier or ranker to identify the best candidates. At first, in order to accomplish this, we used Named Entity Recognition (NER) taggers to form a set of candidate answers. The taggers that we used include Gram-CNN \cite{gram-cnn}, LingPipe\cite{lingpipe} and PubTator \cite{pubtator}. To analyze the effectiveness of these taggers, we performed an analysis on BioASQ training set 5b by evaluating the fraction of questions whose answers are included in the candidate entity set by the taggers.
@@ -82,7 +90,7 @@ As a baseline, we first present an unsupervised ranking system for the candidate
 
 \begin{figure}
     \centering
-    \includegraphics[scale=0.4]{UnsupervisedNERPipeline.png}
+    \includegraphics[scale=0.4]{images/UnsupervisedNERPipeline.png}
     \caption{Unsupervised generation of factoid/list type answers using NER taggers and BM25 retrieval model}
     \label{fig:UnsupervisedNERPipeline}
 \end{figure}
@@ -99,6 +107,10 @@ Once we rank the entities, we use a naive approach of merely taking top 5 entiti
 
 We found that using just the NER entities as the answer candidates, the classifier could achieve an MRR of 0.06 on factoid type questions and an F-measure of 0.18 for list type questions. However, by having all the n-grams ($n = 1, 2, 3, 4$) from the snippets as candidate answers and using NER tags as LeToR features, the performance was improved to an MRR of 0.195 on Factoid type questions and an F1 score of 0.234  on List type questions. The results are summarized in Table \ref{tab:comparison_results}.
 
+
+\subsubsection{Error Analysis}
+
+\subsubsection{Hypotheses Confirmation/Revision}
 
 % \newline \textbf{Features}: For features, we have used combination of syntactic, information retrieval, information theory, semantic and lexical features. POS tags, frequency, tf-idf, NER tags are examples of the features extracted for each candidate representation, which would consist of a vector of values between 0 and 1.  Therefore, for each candidate answer c for a question, we have a vector $v = f(c_i,S,q)$ that represents the features for this candidate.
 

@@ -6,24 +6,24 @@
 
 \section{Introduction}
 
-In the era of ever advancing medical sciences and the age of the internet, a remarkable amount of medical literature is constantly being posted online. This has led to a need for an effective retrieval and indexing system which can allow us to extract meaningful information from these vast knowledge sources. One of the most effective and natural ways to leverage this huge amount of data in real life is to build a Question Answering system which will allow us to directly query this data and extract meaningful and structured information in a human readable form. To that end, we present a comprehensive investigation into different types of QA systems based on question and answer types, as well as analyze the merits and demerits of having a modularized question-type based system as opposed to an end-to-end QA system.
+% In the era of ever advancing medical sciences and the age of the internet, a remarkable amount of medical literature is constantly being posted online. This has led to a need for an effective retrieval and indexing system which can allow us to extract meaningful information from these vast knowledge sources. One of the most effective and natural ways to leverage this huge amount of data in real life is to build a Question Answering system which will allow us to directly query this data and extract meaningful and structured information in a human readable form. 
+
+In the last few years, there have been tremendous advancements in the field of Question Answering, with the neural Question Answering systems even outperforming humans in some cases[\cite{msmarco}]. However, there is also a large diversity in the type and nature of QA systems, and most systems are very specific to a certain dataset. For a new QA dataset, it is still hard to predict what kind of QA models would be most befitting and the extent to which a QA model trained on one dataset would work on another.  To that end, we present a comprehensive investigation into different types of QA systems based on question and answer types, as well as analyze the merits and demerits of having a modularized question-type based system as opposed to an end-to-end QA system. 
 
 \subsection{General Hypothesis}
 
+With the key idea to assess the generalizability of a Question Answering system, we formulate our general hypothesis as: \\
+
+For the task of Question Answering (QA), a comprehensive and holistic system can be designed that can handle multiple question/answer types and can yield a good performance across a number of QA datasets.
 
 \subsection{Scope}
 
-% In this paper, we present  an end-to-end question answering system designed to handle the large variety of question types present in the BioASQ dataset which we call as ``\textit{BioAMA}: Biomedical Ask Me Anything".   \\
-Our key novel contributions in this paper are:
-\begin{enumerate}
-    \item \textbf{State of the art result on ideal answer questions}: Our proposed \textit{BioAMA} system attains state of the art results in automatic evaluation measures for the ideal answer questions in Task 5b of the BioASQ dataset, yielding a 7\%  improvement over the previous state of the art system \cite{khyati-paper}.
-    \item \textbf{Novel framework for Yes/No type QA}: 
-    We introduce a novel NLI-based approach for answering the Yes/No style questions in the BioASQ dataset. We model these questions as a Textual Entailment (TE) problem and use Hierarchical Convolutional Neural Network based Infersent models \cite{Infersent} to answer this type of question. To address the challenge of inadequate training data, we also introduce a novel embedding projection technique which allows for effective transfer learning from models trained on larger datasets with a different vocabulary to work on the much smaller BioASQ dataset.
-    \item \textbf{A novel two-stage approach to answer Factoid and List type questions}: 
-    By using an ensemble of biomedical NER taggers to generate a candidate answer set, we devise unsupervised and supervised ranking algorithms to generate the final predictions.
-    \item \textbf{Improved Maximum Marginal Relevance (MMR) framework}: We improve upon the MMR framework for relevant sentence selection from the chosen snippets. The use of MMR for sentence selection was introduced in the work of Chandu et al. \shortcite{khyati-paper}. We improve upon this framework by experimenting with a number of more informative similarity metrics to replace and improve upon the baseline Jaccard similarity metric.
+In order to test our hypothesis, we design and implement broadly two types of Question Answering systems - 1) a modularised question-type specific system and 2) an end-to-end system. We test the performance of these systems on two different datasets (one small and one large) in order to identify a general pattern of relative performances. 
 
-\end{enumerate}
+We confine the scope of this work to the question types - yes/no, factoid, list, summary and description. We also consider fixed-sized manually-curated datasets in order to build supervised QA systems. The key focus of our work is, as mentioned earlier, to compare the relative performances of the two systems across different datasets and it is not to develop a single system that works best on a specific dataset. That being said, we do employ several techniques to improve the individual performances of both the systems in order to ensure a fair comparison.
+
+% In this paper, we present  an end-to-end question answering system designed to handle the large variety of question types present in the BioASQ dataset which we call as ``\textit{BioAMA}: Biomedical Ask Me Anything".   \\
+
     %\item \textbf{Incorporating Information retrieval in the Question Answering pipeline}:
     %We incorporate Indri and BM25 based features in our pipeline to allow for effective information retrieval from the biomedical knowledgebase which allows us to choose the snippets which are most relevant to a given question. 
     %\item \textbf{Statistical ranking models}: We use the powerful LeTOR framework to allow for ranking of our snippets chosen by the information retrieval mechanism. This allows us to maximize the information we extract from the snippets which are deemed more relevant to a specific question. This also blends in well with our MMR framework which makes use of the ranking framework to extract the most relevant and non-repetitive information from the chosen snippets.

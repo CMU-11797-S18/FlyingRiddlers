@@ -1,7 +1,9 @@
-\section{Question-type based QA system}
+\section{Question-type based QA system} \label{approach2}
 
-\label{approach2}
-Exact answers represent the subset of the BioASQ task where the responses are not structured paragraphs, but instead either a single entity (\textit{yes/no} types) or a combination of named entities (\textit{factoid} or \textit{list} types) that compose the correct reply to the given query. The main idea refers to evaluating if a response is able to capture the most important components of an answer. For factoid or list types of questions, we must return a list of the most likely entities to compose the answer. The main difference between them is that ground truth for \textit{factoid} questions is composed of only one correct answer and the evaluation method is Mean Reciprocal Rank (MRR). However, the ground truth for \textit{list} is an actual list of correct answers with varying length, which uses F-measure as an evaluation metric. The BioASQ submission format allows everyone to submit 5 ranked answers for \textit{factoid} and 1 to 10 answers for \textit{list}. For \textit{yes/no} questions, the ground truth is simply the yes or no label, using maF-measure as an evaluation metric.
+We now present a QA system which is a combination of several modules, each built to handle a specific question type. The reason we believe that such a system would be effective is because of that, in this case, the nuances of each of the question types can be appropriately captured in the modules and the modifications to one module to address its corresponding inadequacies will not affect the performance of any other. 
+We build this system for the BioASQ dataset, primarily because of the unique challenges that the BioASQ dataset which call for a modularized system. 
+
+In the sections that follow, we shall present the modules for handling the question types: yes/no, factoid/list and summary type. In addition to addressing each question type specifically, we also cater to different answer types: exact and ideal. Exact answers represent the subset of the BioASQ task where the responses are not structured paragraphs, but instead either a single entity (\textit{yes/no} types) or a combination of named entities (\textit{factoid} or \textit{list} types) that compose the correct reply to the given query. The main idea refers to evaluating if a response is able to capture the most important components of an answer. For factoid or list types of questions, we must return a list of the most likely entities to compose the answer. The main difference between them is that ground truth for \textit{factoid} questions is composed of only one correct answer and the evaluation method is Mean Reciprocal Rank (MRR). However, the ground truth for \textit{list} is an actual list of correct answers with varying length, which uses F-measure as an evaluation metric. The BioASQ submission format allows everyone to submit 5 ranked answers for \textit{factoid} and 1 to 10 answers for \textit{list}. For \textit{yes/no} questions, the ground truth is simply the yes or no label, using F-measure as an evaluation metric.
 
 \subsection{Yes/No Type Questions}
 
@@ -68,47 +70,46 @@ The primary goal of our NLI module is to infer if any of the sentences among the
 
 However, we have pre-trained embeddings available that were trained on PubMed and PMC texts along with Wikipedia articles \cite{biomed_embed}. To leverage these embeddings, we implemented an embedding-transformation methodology to projecting the PubMed embeddings to GLOVE embedding space and then fine tune the pre-trained \textit{InferSent} on the BioASQ dataset for textual entailment. The hypothesis is that, since both the embeddings had a significant fraction of documents in common (Wikipedia corpus), by transforming the embeddings from one space to another, the sentence embeddings from the model would still represent a lot of the semantic features of the input sentences that can subsequently used for classifying textual entailment. For this task, we explore both linear and non-linear methods of embedding transformation.
 
-    While simple, a linear projection of embeddings from one space to another has shown to be quite effective for a lot of multi-domain tasks. By imposing an orthogonality constraint on the project matrix, we model this problem as an orthogonal Procrustes problem: \\
-    Let $d_p$ and $d_g$ be the embedding dimensions of PubMed embeddings and GLOVE embeddings respectively.
-    If $E_p$ and $E_g$ are the matrices of PubMed embeddings ($N \times d_p$) and their corresponding GLOVE embeddings ($N \times d_g$) for the words that both the embeddings have in common ($N$), the projection matrix ($d_g \times d_p$) can be computed as,
-    \begin{align*}
-        W^* &= \argmin_W \lVert  W E_p^{\intercal} - E_g^{\intercal} \rVert
-    \end{align*}
-    subject to the constraint that $W$ is orthogonal.
-    The solution to this optimization problem is given by using the singular value decomposition of $E_g^{\intercal} E_p$, i.e.$  W^* = UV^{\intercal}$ where $E_g^{\intercal} E_p = U \Sigma V^{\intercal}$
-    With this simple linear transformation, we then computed the transformed embeddings for all the words in the PubMed embeddings that are not present in the GLOVE embeddings. 
+While simple, a linear projection of embeddings from one space to another has shown to be quite effective for a lot of multi-domain tasks. By imposing an orthogonality constraint on the project matrix, we model this problem as an orthogonal Procrustes problem: \\
+Let $d_p$ and $d_g$ be the embedding dimensions of PubMed embeddings and GLOVE embeddings respectively.
+If $E_p$ and $E_g$ are the matrices of PubMed embeddings ($N \times d_p$) and their corresponding GLOVE embeddings ($N \times d_g$) for the words that both the embeddings have in common ($N$), the projection matrix ($d_g \times d_p$) can be computed as,
+\begin{align*}
+    W^* &= \argmin_W \lVert  W E_p^{\intercal} - E_g^{\intercal} \rVert
+\end{align*}
+subject to the constraint that $W$ is orthogonal.
+The solution to this optimization problem is given by using the singular value decomposition of $E_g^{\intercal} E_p$, i.e.$  W^* = UV^{\intercal}$ where $E_g^{\intercal} E_p = U \Sigma V^{\intercal}$
+With this simple linear transformation, we then computed the transformed embeddings for all the words in the PubMed embeddings that are not present in the GLOVE embeddings. 
 
-    We also explore a non-linear transformation using a feed-forward neural network where the the objective is to learn function $f$ such that, $f(e_p; \theta) = e_g$ where, $e_p$ and $e_g$ are PubMed and GLOVE embeddings respectively. We model $f$ using a deep neural network with parameters $\theta$, and train using the common words in both the embeddings. 
-    % The effectiveness of this training is a result of the large number of common vocabulary between the two embeddings (since both are trained on Wikipedia text among other corpora).
+We also explore a non-linear transformation using a feed-forward neural network where the the objective is to learn function $f$ such that, $f(e_p; \theta) = e_g$ where, $e_p$ and $e_g$ are PubMed and GLOVE embeddings respectively. We model $f$ using a deep neural network with parameters $\theta$, and train using the common words in both the embeddings. 
+% The effectiveness of this training is a result of the large number of common vocabulary between the two embeddings (since both are trained on Wikipedia text among other corpora).
 
-    %\end{enumerate}
+%\end{enumerate}
 
-    The transformed embeddings from these models were used in conjunction with the pre-trained \textit{InferSent} model to encode the semantic features of the biomedical sentences as sentence embeddings. Subsequently, we employ these sentence embeddings of the assertion-sentence pairs for a particular question to train a three-way neural classifier to predict if the relationship between the two is entailment, contradiction or neither. 
-    
-    It is worth noting here that the embedding transformation techniques that we implemented are not specific to the NLI tasks and, in fact, enable transfer learning of a much broader set of tasks on smaller datasets like BioASQ by using the pre-trained models on large datasets of other domains and fine-tuning on the smaller dataset.
-    
+The transformed embeddings from these models were used in conjunction with the pre-trained \textit{InferSent} model to encode the semantic features of the biomedical sentences as sentence embeddings. Subsequently, we employ these sentence embeddings of the assertion-sentence pairs for a particular question to train a three-way neural classifier to predict if the relationship between the two is entailment, contradiction or neither. 
 
-    \subsubsection{Classification}
-    
-    As a final step, we use the textual entailment results for each assertion-sentence pair generated to heuristically classify the answer as \textit{yes} or \textit{no}. Since our system comprises multiple stages with the errors of each cascading to the final stage, we do not get perfect entailment results for the pairs. However, since we have a lot of pairs, we aggregate these entailment scores to compute the overall entailment or contraction scores to reduce the effect of accumulated errors for individual pairs on classification.
-    
-    We used a simple unsupervised approach for classification by just comparing the overall entailment and contradiction scores, i.e. if the total number of snippet sentences that entail the assertion are $N_e$ and the total number of snippet sentences that contradict are $N_c$, then, 
-    \begin{align*}
-        \text{answer}_{\text{q}} = \begin{cases}
-        \text{yes} & \text{if } N_e \ge N_c \\
-        \text{no} & \text{ otherwise}
-        \end{cases}
-    \end{align*}
+It is worth noting here that the embedding transformation techniques that we implemented are not specific to the NLI tasks and, in fact, enable transfer learning of a much broader set of tasks on smaller datasets like BioASQ by using the pre-trained models on large datasets of other domains and fine-tuning on the smaller dataset.
 
-    \begin{figure*}[t!]
-        \centering
-        \includegraphics[scale=0.3]{images/YesNoPipeline.png}
-        \caption{The complete system for yes/no answer classification using a question and relevant snippets}
-        \label{fig:yesno_pipeline}
-    \end{figure*}
+\subsubsection{Classification}
 
-    The end-to-end architecture of our system from the input questions and snippets to the answer is shown Figure \ref{fig:yesno_pipeline}.
-    
+As a final step, we use the textual entailment results for each assertion-sentence pair generated to heuristically classify the answer as \textit{yes} or \textit{no}. Since our system comprises multiple stages with the errors of each cascading to the final stage, we do not get perfect entailment results for the pairs. However, since we have a lot of pairs, we aggregate these entailment scores to compute the overall entailment or contraction scores to reduce the effect of accumulated errors for individual pairs on classification.
+
+We used a simple unsupervised approach for classification by just comparing the overall entailment and contradiction scores, i.e. if the total number of snippet sentences that entail the assertion are $N_e$ and the total number of snippet sentences that contradict are $N_c$, then, 
+\begin{align*}
+    \text{answer}_{\text{q}} = \begin{cases}
+    \text{yes} & \text{if } N_e \ge N_c \\
+    \text{no} & \text{ otherwise}
+    \end{cases}
+\end{align*}
+
+\begin{figure*}[t!]
+    \centering
+    \includegraphics[width=0.95\textwidth]{images/YesNoPipeline.png}
+    \caption{The complete system for yes/no answer classification using a question and relevant snippets}
+    \label{fig:yesno_pipeline}
+\end{figure*}
+
+The end-to-end architecture of our system from the input questions and snippets to the answer is shown Figure \ref{fig:yesno_pipeline}.
+
 \subsubsection{Experimental Details}
 
 For parsing the questions, we used BLLIP reranking parser \cite{charniak_new1} (Charniak-Johnson parser) %\cite{charniak_new1} 

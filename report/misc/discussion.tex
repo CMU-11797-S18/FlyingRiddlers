@@ -1,0 +1,38 @@
+
+\begin{table*}[t!]
+    \centering
+    \begin{tabular}{|c|c|c|c|c|} 
+    \hline \hline
+    Model & Exact Answers & Exact Answers & Exact Answers & Ideal Answers \\
+    &Yes/No type& Factoid  type& List type & All types \\
+    & Accuracy (\%) & MRR & F1 score & ROUGE-2\\
+    \hline \hline
+    \cite{khyati-paper} & - & - & - & 0.653  \\
+    \hline
+    \cite{fudan}&\textbf{0.714}&0.272& 0.187& -\\
+    \hline
+    \cite{fastqa}& - &\textbf{0.392}& \textbf{0.361}&-\\
+    \hline
+    Sarrouti and Alaoui \shortcite{usmba}&0.461&0.207&0.243&0.577\\
+    \hline
+    \textit{BioAMA}(Ours)&0.653& 0.195&0.234&\textbf{0.721}\\
+    \hline \hline
+    
+    \end{tabular}
+    \caption{Comparison of our model with other state of the art approaches}
+    \label{tab:comparison_results}
+\end{table*}
+\vspace{-0.3cm}
+
+
+
+Our key novel contributions in this paper are:
+\begin{enumerate}
+    \item \textbf{State of the art result on ideal answer questions}: Our proposed \textit{BioAMA} system attains state of the art results in automatic evaluation measures for the ideal answer questions in Task 5b of the BioASQ dataset, yielding a 7\%  improvement over the previous state of the art system \cite{khyati-paper}.
+    \item \textbf{Novel framework for Yes/No type QA}: 
+    We introduce a novel NLI-based approach for answering the Yes/No style questions in the BioASQ dataset. We model these questions as a Textual Entailment (TE) problem and use Hierarchical Convolutional Neural Network based Infersent models \cite{Infersent} to answer this type of question. To address the challenge of inadequate training data, we also introduce a novel embedding projection technique which allows for effective transfer learning from models trained on larger datasets with a different vocabulary to work on the much smaller BioASQ dataset.
+    \item \textbf{A novel two-stage approach to answer Factoid and List type questions}: 
+    By using an ensemble of biomedical NER taggers to generate a candidate answer set, we devise unsupervised and supervised ranking algorithms to generate the final predictions.
+    \item \textbf{Improved Maximum Marginal Relevance (MMR) framework}: We improve upon the MMR framework for relevant sentence selection from the chosen snippets. The use of MMR for sentence selection was introduced in the work of Chandu et al. \shortcite{khyati-paper}. We improve upon this framework by experimenting with a number of more informative similarity metrics to replace and improve upon the baseline Jaccard similarity metric.
+
+\end{enumerate}

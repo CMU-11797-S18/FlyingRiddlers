@@ -6,16 +6,15 @@ We build our QA systems on two datasets: BioASQ dataset (from PubMed documents) 
 \subsection{BioASQ}
 \label{Dataset}
 
-BioASQ dataset is 
-BioASQ challenge \cite{bioasq} is a large scale biomedical question answering and semantic indexing challenge, which has been running as an annual competition since 2013. %This challenge assesses the ability of systems to semantically index very large numbers of biomedical scientific articles, and to return concise and user-understandable answers to given natural language questions by combining information from biomedical articles and ontologies.
+BioASQ dataset was released by the BioASQ challenge \cite{bioasq}, which is a large scale biomedical question answering and semantic indexing challenge that has been running as an annual competition since 2013. This challenge assesses the ability of systems to semantically index very large numbers of biomedical scientific articles, and to return concise and user-understandable answers to given natural language questions by combining information from biomedical articles and ontologies.
 We deal with the Phase B of the challenge which deals with large scale biomedical question answering. The dataset provides a set of questions and snippets from PubMed, which are relevant to the specific question. It also provides users with a question type and urls of the relevant PubMed articles itself. The 5b version of this dataset consists of 1,799 questions in 3 distinct categories:
+
 \begin{enumerate}
     \item \textbf{Factoid type}: This question type has a single entity as the ground truth answer and expects the systems to output a set of  entities ordered by relevance; systems are evaluated using the mean reciprocal rank \cite{MRR} of the answer entities with reference to the ground truth answer entity.
     \item \textbf{List type}: This answer type expects the system to return an unordered list of entities as answer and evaluates them using a F-score based metric against a list of reference answer entities which can vary in number.
     \item \textbf{Yes/No type}: This question type asks the systems to answer a given question with a binary output namely yes or no. The questions typically require reasoning and inference over the evidence snippets to be able to answer the questions correctly.
 \end{enumerate}
 
-The dataset expected the participants to generate two types of answers, namely, exact and ideal answers. 
-In ideal answers, the systems are expected to generate a well formed paragraph for each of the question types which explains the answer to the question. They call these answers `ideal' because it is what a human would expect as an answer by a peer biomedical scientist. In the exact answers the systems are expected to generate ``yes" or ``no" in the case of yes/no questions, named entities in the case of factoid questions and list of named entities in the case of list questions.
+The dataset expected the participants to generate two types of answers, namely, exact and ideal answers. In ideal answers, the systems are expected to generate a well formed paragraph for each of the question types which explains the answer to the question. They call these answers `ideal' because it is what a human would expect as an answer by a peer biomedical scientist. In the exact answers the systems are expected to generate ``yes" or ``no" in the case of yes/no questions, named entities in the case of factoid questions and list of named entities in the case of list questions.
 
 \subsection{MS MARCO}

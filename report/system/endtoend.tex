@@ -1,10 +1,10 @@
-
-
 \section{End-to-end System}
+
+By an \textit{end-to-end} system, we refer to a question answering system where the individual parts of the system are not fine-tuned or modeled for specific sub-tasks, and a single model is trained to take the question as well as passages/documents as inputs and produce the answer as an output, without any explicit indication of the question/answer type. To train such a system, we make enhancements to the existing state-of-the-art end-to-end QA systems, which we describe in the subsequent sections.
 
 \subsection{Dynamic Co-Attention Networks}
 
-In our span prediction task we implement a modified variant of the Dynamic Co-Attention Network (DCN) architecture. This architecture is composed of an encoder segment and a decoder segment. The encoder segment first encodes the question and document word vectors with a bidirectional GRU. It then computes an attention both from the question text to the passage and from the passage to the question text to identify the most relevant information for each word in the passage-question pair. The computed attention over the words are fused to add contextual information to each word vector in the passage. In particular, the fusion process finds the soft dot attention from the question to the passage, from the passage to the question, and from the passage to the fused question-passage vectors:
+For span prediction, we implement a modified variant of the Dynamic Co-Attention Network (DCN) architecture. This architecture is composed of an encoder segment and a decoder segment. The encoder segment first encodes the question and document word vectors with a bidirectional GRU. It then computes an attention both from the question text to the passage and from the passage to the question text to identify the most relevant information for each word in the passage-question pair. The computed attention over the words are fused to add contextual information to each word vector in the passage. In particular, the fusion process finds the soft dot attention from the question to the passage, from the passage to the question, and from the passage to the fused question-passage vectors:
 
 \begin{align*}
 D, Q: &\text{ The passage and question matrices, where each row is a word vector} \\
@@ -46,16 +46,17 @@ The encoder architecture is presented in Image \ref{im:enc} and the Decoder arch
     \label{im:dec}
 \end{figure*}
 
-\subsection{Experiments on SquAD}
+\subsubsection{Experiments}
 
-We have first computed the GLoVe and CoVe word vectors for each word in the training and development data of the SQuAD dataset, replacing all out of dictionary words with the zero vector. Then the network is trained with the Adam optimizer and the cross entropy loss for 40 epochs on a K80 GPU. A three-layer GRU network was used in the decoder network for all experiments, but we have adjusted the number of hidden units for the GRU networks that exist in the architecture. Experiments with 30, 100 and 200 hidden units per GRU were performed. An annealed learning rate initialized at 0.002 and a weight decay of 0.0001 was used during the training process. Gradient clipping was employed to prevent large gradients from destabilizing the training process, and early stopping was employed to stop training once overfitting is detected.
+We first compute the GLoVe and CoVe word vectors for each word in the training and development data of the Stanford Question Answering Dataset (SQuAD) dataset, replacing all out of dictionary words with the zero vector. Then the network is trained with the Adam optimizer and the cross entropy loss for 40 epochs on a K80 GPU. A three-layer GRU network is used in the decoder network for all experiments, but we adjust the number of hidden units for the GRU networks that exist in the architecture. Experiments with 30, 100 and 200 hidden units per GRU are performed. An annealed learning rate initialized at 0.002 and a weight decay of 0.0001 is used during the training process. Gradient clipping is employed to prevent large gradients from destabilizing the training process, and early stopping is employed to stop training once overfitting is detected.
 
-\subsection{Results on SquAD}
-The results on SquaD with all the different variety of approaches we tried are presented in Table \ref{im:squad_res}. We presents the results in a step by step fashion showing how each of our modifications improves the results. We also note that we train our model for just 20 epochs compared to over 200 epochs used by the original model. We also note that our best performing model qualifies to be ranked on the official SquAD leader board.
+\subsection{Results on SQuAD}
+The results on SQuAD with all the different variety of approaches we tried are presented in Table \ref{im:squad_res}. We present the results in a step by step fashion, showing how each of our modifications improves the results. We also note that we train our model for just 20 epochs compared to over 200 epochs used by the original model. Our best performing model qualifies to be ranked on the official SQuAD leader board.
+
 \begin{figure*}[h]
     \centering
     \includegraphics[width=0.85\textwidth]{images/res_squad.png}
-    \caption{Results on the SquAD dataset}
+    \caption{Results on the SQuAD dataset}
     \label{im:squad_res}
 \end{figure*}
 
@@ -67,13 +68,9 @@ The results on SquaD with all the different variety of approaches we tried are p
 \end{figure*}
 
 
+An informal test is also performed with a small number of test cases not found in the data set. We find that the trained network has the capacity to answer these questions accurately as well. One out-of-dataset example is shown below:
 
-
-
-An informal test was also performed with a small number of test cases not found in the data set. It was found that the trained network has the capacity to answer these questions accurately as well. One out-of-dataset example is shown below:
-
-\vspace{1cm}
-\begin{table*}
+\begin{table}
 \begin{tabular}{|c|p{0.75\textwidth}|}
     \hline
     Document & The de Broglie–Bohm theory, also known as the pilot wave theory, Bohmian mechanics, Bohm's interpretation, and the causal interpretation, is an interpretation of quantum theory. In addition to a wavefunction on the space of all possible configurations, it also postulates an actual [...] The theory is named after Louis de Broglie (1892–1987) and David Bohm (1917–1992). \\
@@ -83,17 +80,16 @@ An informal test was also performed with a small number of test cases not found 
     Predicted answer & Louis de Broglie \\
     \hline
 \end{tabular}
-\end{table*}
-
-\vspace{1cm}
+\end{table}
 
 This example demonstrates the ability of the network to resolve indirect relationships in the text, such as the chain connecting the phrase ``The theory [is named after]'' to its referent ``The de Broglie–Bohm theory'' to its alternative name ``the pilot wave theory''.
 
-
 \subsection{Free Form Answer Generation}
 
-Free Form answer generation is a relatively unexplored problem with barely any literature available on it. Trying to solve this problem directly is a fairly hard task and would require an extremely complex network architecture which can not just look at huge text sources to detect the most relevant parts, but also compose a human like answer. This is too hard for most networks to achieve. To reduce the complexity of the problem being dealt by a single network, we use the spans predicted by our Dynamic Co-Attention Network as input to the Free Form answer generator network. This makes the network more powerful by giving it more information about the content of the expected answer and it now has to use this content information to compose an answer. \\
-Natural Language generation is known to be one of the hardest problems on the NLP community due to the inability of modern day architectures to model long term context and generate syntactic and semantically coherent sentences. One of the primary issues we noticed with such architecture is the ineffectiveness of the loss functions typically used in the seq2seq prediction networks typically used for this task. The seq2seq networks are usually based on LSTM encoder - decoder style architectures and typically penalize the generator using a cross entropy loss between the predicted and expected output word. Such work level loss metrics fail to capture global sentence level dynamics and completely miss out on enforcing syntactic and semantic coherence. We propose a novel loss metric here which we feel would be greatly useful in dealing with such issues.\\
+Free Form answer generation is a relatively unexplored problem with little existing literature. Trying to solve this problem directly is a fairly hard task and would require an extremely complex network architecture which can not just look at huge text sources to detect the most relevant parts, but also compose a human like answer. This is too hard for most networks to achieve. To reduce the complexity of the problem being dealt by a single network, we use the spans predicted by our Dynamic Co-Attention Network as input to the Free Form answer generator network. This makes the network more powerful by giving it more information about the content of the expected answer and it now has to use this content information to compose an answer. \\
+
+Natural Language generation is known to be one of the hardest problems on the NLP community due to the inability of modern day architectures to model long term context and generate syntactic and semantically coherent sentences. One of the primary issues we notice with such architecture is the ineffectiveness of the loss functions typically used in the seq2seq prediction networks typically used for this task. The seq2seq networks are usually based on LSTM encoder - decoder style architectures and typically penalize the generator using a cross entropy loss between the predicted and expected output word. Such work level loss metrics fail to capture global sentence level dynamics and completely miss out on enforcing syntactic and semantic coherence. We propose a novel loss metric here which we feel would be greatly useful in dealing with such issues.\\
+
 First we introduce our generator network architecture. The architecture we propose is shown in Image \ref{im:im_gen}.
 \begin{figure*}[h]
     \centering
@@ -101,6 +97,7 @@ First we introduce our generator network architecture. The architecture we propo
     \caption{The Answer generator Network}
     \label{im:im_gen}
 \end{figure*}
+
 The network consists of a question encoder network, a paragraph encoder network and an attention based decoder network.\\
 The question and passage encoder are Bidirectional GRU's which take as input the question and passage word embeddings, one word at a time and generate the respective question and passage embedding. This is given by the equations:
 
@@ -114,7 +111,8 @@ The decoder is also a GRU which has a non linear combination of the question and
 The rest of the decoder can be represented as:
 \[d_t = GRU(w_{t-1}, {c^P}_{t-1}, {c^Q}_{t-1}, d_{t-1})\]
 where $w_{t−1}$ is the word generated at the previous time step, $d_{t−1}$ is the previous decoder state and ${c^P}_{t-1}$ is the passage context vector which is learnt by computing the attention of the decoder state over the passage states. Similarly ${c^Q}_{t-1}$ is the context vector computed by taking the attention of the decoder state over the states of the question encoder. 
-We experimented with 2 different types of attention mechanisms, which we call as the `additive attention mechanism' and the `dot attention mechanism'. \\
+
+We experiment with two different types of attention mechanisms, which we call as the `additive attention mechanism' and the `dot attention mechanism'. \\
 The additive attention mechanism is defined by the following equations.:\\
 \[  {{s^P}_{t,j}} = {{v^P}_a}^Ttanh({W^P}_a(d_{t-1}) + {U_a}^P{h^P}_j )\]
 \[{a^P}_{t,i} = softmax({{s^P}_{t,j}})\]
@@ -140,14 +138,12 @@ To predict the next word we use the present decoder state, the question and pass
 \[p(y_t|y_1, . . . , y_{t-1}) = softmax(W_o \cdot m_t) \]
 
 
-
-
-\subsection{Free form generation on MS Marco dataset}
+\subsection{Results on MS MARCO}
 We use our free form answer generation network on the MSMarco V1 dataset. The results for the same are listed in Image \ref{im:res_marco}. We note that we are listed as one of the highest ranked single model on the actual MSMarco leaderboard.
 
+\subsection{Experiments and Results on BioASQ dataset}
 
-\subsection{Experiments and Results on BioAsq dataset}
-We further extend our model to evaluate it on the BioASQ dataset. We use our DCN model to perform the QA task on the BioASQ dataset. Presently, we only work with factoid and list type of questions. The architecture is exactly the same as the DCN encoder. In place of the decoder we simply use the attention values over the passage to predict our answers. For both factoid and list type questions, the passage entities which attain attention more than a threshold are chosen as the correct answers. For the Factoid type answers, as the ranking of these entities also matters we return them in the order of decreasing attention weights. The results of this model evaluated on the BioASQ dataset after pre-training on the Squad dataset are presented in Table \ref{tab:bioasq_res}. Note that presently the model uses word2vec and Cove embeddings and hence several of the Biological entities are actually not a part of the vocabulary which may partially explain the poor performance of the DCN model on the BioASQ dataset.
+We further extend our model to evaluate it on the BioASQ dataset. We use our DCN model to perform the QA task on the BioASQ dataset. Presently, we only work with factoid and list type of questions. The architecture is exactly the same as the DCN encoder. In place of the decoder we simply use the attention values over the passage to predict our answers. For both factoid and list type questions, the passage entities which attain attention more than a threshold are chosen as the correct answers. For the Factoid type answers, as the ranking of these entities also matters we return them in the order of decreasing attention weights. The results of this model evaluated on the BioASQ dataset after pre-training on the SQuAD dataset are presented in Table \ref{tab:bioasq_res}. Note that presently the model uses word2vec and Cove embeddings and hence several of the Biological entities are actually not a part of the vocabulary which may partially explain the poor performance of the DCN model on the BioASQ dataset.
 
 \begin{table}
 \begin{tabular}{|c|c|c|}

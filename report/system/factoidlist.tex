@@ -24,36 +24,22 @@ For devising the model and evaluation, we primarily focused on factoid type ques
     \label{tab:NER_tagging_performances}
 \end{table}
 
-\begin{table*}[t!]
-    \centering
-    \begin{tabular}{|c|c|c|c|c|} 
-    \hline \hline
-    Model & Exact Answers & Exact Answers & Exact Answers & Ideal Answers \\
-    &Yes/No type& Factoid  type& List type & All types \\
-    & Accuracy (\%) & MRR & F1 score & ROUGE-2\\
-    \hline \hline
-    \cite{khyati-paper} & - & - & - & 0.653  \\
-    \hline
-    \cite{fudan}&\textbf{0.714}&0.272& 0.187& -\\
-    \hline
-    \cite{fastqa}& - &\textbf{0.392}& \textbf{0.361}&-\\
-    \hline
-    Sarrouti and Alaoui \shortcite{usmba}&0.461&0.207&0.243&0.577\\
-    \hline
-    \textit{BioAMA}(Ours)&0.653& 0.195&0.234&\textbf{0.721}\\
-    \hline \hline
-    
-    \end{tabular}
-    \caption{Comparison of our model with other state of the art approaches}
-    \label{tab:comparison_results}
-\end{table*}
-\vspace{-0.3cm}
-
-
 \subsubsection{Initial Hypotheses}
 
 
-dsasadsa
+Initially, we had the following hypotheses:
+
+\bigbreak
+
+\textbf{Hypothesis A}: A method that works for factoid type will probably work similarly with list type with a small group of changes (list size, etc). 
+
+\bigbreak 
+
+\textbf{Hypothesis B}: Extracting NER entities as our possible responses will be a sufficient approach in terms of generating a candidate space.
+
+\bigbreak 
+
+\textbf{Hypothesis C}: Ranking the sentences and extracting entities from the top-ranked sentences will give better results.
 
 \subsubsection{Candidate Selection}
 
@@ -108,9 +94,35 @@ Once we rank the entities, we use a naive approach of merely taking top 5 entiti
 We found that using just the NER entities as the answer candidates, the classifier could achieve an MRR of 0.06 on factoid type questions and an F-measure of 0.18 for list type questions. However, by having all the n-grams ($n = 1, 2, 3, 4$) from the snippets as candidate answers and using NER tags as LeToR features, the performance was improved to an MRR of 0.195 on Factoid type questions and an F1 score of 0.234  on List type questions. The results are summarized in Table \ref{tab:comparison_results}.
 
 
-\subsubsection{Error Analysis}
+\subsubsection{Error Analysis And Future Work}
+
+We can divide the type of mistakes that our model makes into three different parts, as seen on ~\ref{fig:error_fl}. The first one is when the model actually achieves the correct result as one of the returned answers but the option is not exactly reflected on the answer key (Type 1). The second type of mistake is when the model fails to collect a valid reason, but one of the returned answers is very similar in structure or in semantic properties (Type 2). The third type of mistake is when our model completely fails to return an answers, not even getting close to a reasonable result.
+
+Based on that, we can propose a few future directions. The first type of mistake is more related to BioASQ structure than to an actual problem on our end, the solution, therefore, should be a proper channel of communication so we could explore a wider range of alternative responses for exact answers. For the second type of error, there are a few approaches that could significantly improve the model. The first one is to identify likely semantic clusters where the answer could be and create more alternatives based on that. For instance, a wrong answer consisting of 'loss memory' could become a group of 'memory of loss', 'memory loss' and 'loss of memory' combinations. Another alternative would be to use our abstraction summarization model to combine the important information from the top 5 answers and create new related responses based on that. For the third type of mistake, one interesting alternative would be to use some heuristics in order to reduce the number of candidates for each questions. For example, a query about 'which gene' should only have genes as candidates. The motivation is that with less possible candidates, the model would be able to rank them properly.
+
+\begin{figure}
+    \centering
+    \includegraphics[scale=0.4]{images/error_fl.png}
+    \caption{Error Analysis for factoid/list}
+    \label{fig:error_fl}
+\end{figure}
+
 
 \subsubsection{Hypotheses Confirmation/Revision}
+
+After our results and error analysis, we can revisit our hypothesis and see what were the key learning points of our project:
+
+\bigbreak 
+
+\textbf{Hypothesis A}: confirmed. The results for list type questions were even better than for factoid. 
+
+\bigbreak 
+
+\textbf{Hypothesis B}: revised. Although the evaluation document of BioASQ pointed for biological entities as answers, most of the answers do not necessarily fit this category and there is high variance in the format of the ones which fit.
+
+\bigbreak 
+
+\textbf{Hypothesis C}: revised. Top-ranked sentences didn’t necessarily yield better results, but the ranking of the collected entities themselves delivered very good results.
 
 % \newline \textbf{Features}: For features, we have used combination of syntactic, information retrieval, information theory, semantic and lexical features. POS tags, frequency, tf-idf, NER tags are examples of the features extracted for each candidate representation, which would consist of a vector of values between 0 and 1.  Therefore, for each candidate answer c for a question, we have a vector $v = f(c_i,S,q)$ that represents the features for this candidate.
 
@@ -119,19 +131,19 @@ We found that using just the NER entities as the answer candidates, the classifi
 %\subsubsection{Results}
 %The results of our list and factoid type questions are presented in Table \ref{tab:comparison_results}.
 
-%\begin{table}[t!]
-%    \centering
-%    \begin{tabular}{ccc} \hline
-%    Entities & Soft Accuracy (\%) & MRR (\%) \\ \hline
-%    Pubtator & \textbf{7.14} & 3.35 \\
-%    Lingpipe & 4.58 & 2.70 \\
-%    Gram CNN & 0.98 & 0.24 \\
-%    Union    & 1.05 & 0.38 \\
-%    Intersection & 4.91 & \textbf{3.68} \\ \hline
-%    \end{tabular}
-%    \caption{Performance of unsupervised ranking model to identify the entities among the candidates from different taggers, for factoid type questions in BioASQ 5b dataset}
-%    \label{tab:my_label}
-%\end{table}
+\begin{table}[t!]
+    \centering
+    \begin{tabular}{ccc} \hline
+    Entities & Soft Accuracy (\%) & MRR (\%) \\ \hline
+    Pubtator & \textbf{7.14} & 3.35 \\
+    Lingpipe & 4.58 & 2.70 \\
+    Gram CNN & 0.98 & 0.24 \\
+    Union    & 1.05 & 0.38 \\
+    Intersection & 4.91 & \textbf{3.68} \\ \hline
+    \end{tabular}
+    \caption{Performance of unsupervised ranking model to identify the entities among the candidates from different taggers, for factoid type questions in BioASQ 5b dataset}
+    \label{tab:my_label}
+\end{table}
 
 % Model	Exact Matches	Soft Matches	MRR Exact
 % Pubtator	7.14%	50.71%	3.35%

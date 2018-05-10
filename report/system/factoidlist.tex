@@ -31,15 +31,15 @@ Initially, we had the following hypotheses:
 
 \bigbreak
 
-\textbf{Hypothesis A}: A method that works for factoid type will probably work similarly with list type with a small group of changes (list size, etc). 
+\textbf{Hypothesis 1}: A method that works for factoid type will probably work similarly with list type with a small group of changes (list size, etc). 
 
 \bigbreak 
 
-\textbf{Hypothesis B}: Extracting NER entities as our possible responses will be a sufficient approach in terms of generating a candidate space.
+\textbf{Hypothesis 2}: Extracting NER entities as our possible responses will be a sufficient approach in terms of generating a candidate space.
 
 \bigbreak 
 
-\textbf{Hypothesis C}: Ranking the sentences and extracting entities from the top-ranked sentences will give better results.
+\textbf{Hypothesis 3}: Ranking the sentences and extracting entities from the top-ranked sentences will give better results.
 
 \subsubsection{Candidate Selection}
 
@@ -72,11 +72,11 @@ Upon computing the set of candidate answers, we use the question $q$, set of rel
 
 \subsubsection{Unsupervised Ranking}
 
-As a baseline, we first present an unsupervised ranking system for the candidate answers. In this system, the snippet sentences are first ranked using the BM25 model. Then, for each entity, a score is computed by aggregating the BM25 scores of the sentences in which the entity is present. The rationale for this is that the entities in the top ranked sentences are more likely to be the answers. This entity score (which is equivalent to the BM25 score described in \ref{sec:classification_features}) is then used to rank the entities and return the top $k$ entities as answers to the question. The overall unsupervised system is shown in Figure \ref{fig:UnsupervisedNERPipeline}.
+As a baseline, we first present an unsupervised ranking system for the candidate answers. In this system, the snippet sentences are first ranked using the BM25 model. Then, for each entity, a score is computed by aggregating the BM25 scores of the sentences in which the entity is present. The rationale for this is that the entities in the top ranked sentences are more likely to be the answers. This entity score (which is equivalent to the BM25 score described in \ref{sec:classification_features}) is then used to rank the entities and return the top $k$ entities as answers to the question. The overall unsupervised system is shown in Figure \ref{fig:UnsupervisedNERPipeline}, with results tabulated in Table \ref{tab:unsup_performance}.
 
 \begin{figure}
     \centering
-    \includegraphics[scale=0.4]{images/UnsupervisedNERPipeline.png}
+    \includegraphics[scale=0.5]{images/UnsupervisedNERPipeline.png}
     \caption{Unsupervised generation of factoid/list type answers using NER taggers and BM25 retrieval model}
     \label{fig:UnsupervisedNERPipeline}
 \end{figure}
@@ -91,14 +91,26 @@ In order to rank the candidate entities in a supervised way, we used a ranking c
 
 Once we rank the entities, we use a naive approach of merely taking top 5 entities as answers for factoid type and top 10 for list-type. One could, however, devise a separate model for identifying the number of top entities to return as answers for the list-type answers. 
 
-We found that using just the NER entities as the answer candidates, the classifier could achieve an MRR of 0.06 on factoid type questions and an F-measure of 0.18 for list type questions. However, by having all the n-grams ($n = 1, 2, 3, 4$) from the snippets as candidate answers and using NER tags as LeToR features, the performance was improved to an MRR of 0.195 on Factoid type questions and an F1 score of 0.234  on List type questions. The results are summarized in Table \ref{tab:comparison_results}.
+We found that using just the NER entities as the answer candidates, the classifier could achieve an MRR of 0.06 on factoid type questions and an F-measure of 0.18 for list type questions. However, by having all the n-grams ($n = 1, 2, 3, 4$) from the snippets as candidate answers and using NER tags as LeToR features, the performance was improved to an MRR of 0.195 on Factoid type questions and an F1 score of 0.234  on List type questions. The results are summarized in Table \ref{tab:comparison_results} for BioASQ and in Table \ref{tab:entity_marco} for MS MARCO.
 
 
 \subsubsection{Error Analysis And Future Work}
 
-We can divide the type of mistakes that our model makes into three different parts, as seen on ~\ref{tab:bioasq_res}. The first one is when the model actually achieves the correct result as one of the returned answers but the option is not exactly reflected on the answer key (Type 1). The second type of mistake is when the model fails to collect a valid reason, but one of the returned answers is very similar in structure or in semantic properties (Type 2). The third type of mistake is when our model completely fails to return an answers, not even getting close to a reasonable result.
+We can divide the type of mistakes that our model makes into three different parts, as seen on Table ~\ref{tab:bioasq_err_fl}. The first one is when the model actually achieves the correct result as one of the returned answers but the option is not exactly reflected on the answer key (Type 1). The second type of mistake is when the model fails to collect a valid response, but one of the returned answers is very similar in structure or in semantic properties (Type 2). The third type of mistake is when our model completely fails to return relevant answers, not even getting close to a reasonable result.
 
-Based on that, we can propose a few future directions. The first type of mistake is more related to BioASQ structure than to an actual problem on our end, the solution, therefore, should be a proper channel of communication so we could explore a wider range of alternative responses for exact answers. For the second type of error, there are a few approaches that could significantly improve the model. The first one is to identify likely semantic clusters where the answer could be and create more alternatives based on that. For instance, a wrong answer consisting of 'loss memory' could become a group of 'memory of loss', 'memory loss' and 'loss of memory' combinations. Another alternative would be to use our abstraction summarization model to combine the important information from the top 5 answers and create new related responses based on that. For the third type of mistake, one interesting alternative would be to use some heuristics in order to reduce the number of candidates for each questions. For example, a query about 'which gene' should only have genes as candidates. The motivation is that with less possible candidates, the model would be able to rank them properly.
+Based on that, we can propose a few future directions. The first type of mistake is more related to the BioASQ evaluation structure than to an actual problem on our end, the solution, therefore, should be a proper channel of communication with the organization so we could explore a wider range of alternative responses for exact answers. For the second type of error, there are a few approaches that could significantly improve the model. The first one is to identify likely semantic clusters for a particular good answer and create more alternatives based on that. For instance, a wrong answer consisting of 'loss memory' could become a group of combinations: ('memory of loss', 'memory loss' and 'loss of memory'). Another alternative would be to use our abstractive summarization model to combine the important information from the top 5 answers and create new related responses based on that. For the third type of mistake, one interesting alternative would be to use some heuristics in order to reduce the number of candidates for each question. For example, a query about 'which gene' should only have 'genes' as candidates. The motivation is that with less possible candidates, the model would be able to rank them properly.
+
+\begin{table}[h]
+    \centering
+    \begin{tabular}{c|c} \hline
+        \textbf{Metric} & \textbf{Performance (\%)} \\ \hline
+        Exact Precision &  10.99 \\
+        Soft Precision & 21.98 \\
+        MRR & 15.20 \\ \hline
+    \end{tabular}
+    \caption{Performance of the entity-type answers on MS MARCO dataset. Here, exact precision refers to the the answer being the the top ranked candidate while soft precision refers to the answer being among one of the top 5 candidates}
+    \label{tab:entity_marco}
+\end{table}
 
 %\begin{figure}
 %    \centering
@@ -107,43 +119,37 @@ Based on that, we can propose a few future directions. The first type of mistake
 %    \label{fig:error_fl}
 %\end{figure}
 
-\begin{table}
-\centering
-\begin{tabular}{|c|c|c|c|}
-    \hline \hline
-    & Type 1 & Type 2 & Type 3\\
+\begin{table}[t]
+    \centering
+    \begin{tabular}{|c|p{0.25\textwidth}|p{0.25\textwidth}|p{0.25\textwidth}|} \hline
+    & \textbf{Type 1} & \textbf{Type 2} & \textbf{Type 3} \\
     \hline
-     Question & Which is the most prevalent form of arrhythmia worldwide?
-& what memory problems are reported in the " gulf war syndrome"?
- what is the inheritance pattern of li–fraumeni syndrome?\\
-     \hline
-     Gold Answer &  [u'atrial fibrilation', u'af']
+     \textbf{Question} & \textit{Which is the most prevalent form of arrhythmia worldwide?} & \textit{what memory problems are reported in the " gulf war syndrome"?} & \textit{what is the inheritance pattern of li–fraumeni syndrome?} \\ \hline
+     \textbf{Gold Answers} &  [u'atrial fibrilation', u'af']
 & [u'memory loss'] & [u'autosomal dominant'] \\
      \hline
-     Our answer(s) & DCN MarcoNet& 0.11&0.07\\
-    \hline \hline
-\end{tabular}
+     \textbf{Our answer(s)} & atrial fibrillation & loss memory & ['family', 'predisposition', 'members family', 'dominant', 'gene'] \\
+    \hline
+    \end{tabular}
     \caption{Error Analysis for factoid/list}
-    \label{tab:bioasq_res}
+    \label{tab:bioasq_err_fl}
 \end{table}
-
-
 
 \subsubsection{Hypotheses Confirmation/Revision}
 
-After our results and error analysis, we can revisit our hypothesis and see what were the key learning points of our project:
+After our results and error analysis, we can revisit our hypothesis and see what were the key learning points of this part of our project:
 
 \bigbreak 
 
-\textbf{Hypothesis A}: confirmed. The results for list type questions were even better than for factoid. 
+\textbf{Hypothesis 1} (\textit{confirmed}): The results for list type questions were very similar in comparison to factoid type. 
 
 \bigbreak 
 
-\textbf{Hypothesis B}: revised. Although the evaluation document of BioASQ pointed for biological entities as answers, most of the answers do not necessarily fit this category and there is high variance in the format of the ones which fit.
+\textbf{Hypothesis 2} (\textit{revised}): Although the evaluation document of BioASQ pointed for biological entities as the set of possible answers, most of the answers do not necessarily fit this category and there is  a high variance in format/style for the ones that actually fit.
 
 \bigbreak 
 
-\textbf{Hypothesis C}: revised. Top-ranked sentences didn’t necessarily yield better results, but the ranking of the collected entities themselves delivered very good results.
+\textbf{Hypothesis 3} (\textit{revised}): Top-ranked sentences did not necessarily yield better results, but the ranking of the collected entities themselves delivered very strong results.
 
 % \newline \textbf{Features}: For features, we have used combination of syntactic, information retrieval, information theory, semantic and lexical features. POS tags, frequency, tf-idf, NER tags are examples of the features extracted for each candidate representation, which would consist of a vector of values between 0 and 1.  Therefore, for each candidate answer c for a question, we have a vector $v = f(c_i,S,q)$ that represents the features for this candidate.
 
@@ -151,6 +157,8 @@ After our results and error analysis, we can revisit our hypothesis and see what
 
 %\subsubsection{Results}
 %The results of our list and factoid type questions are presented in Table \ref{tab:comparison_results}.
+
+
 
 \begin{table}[t!]
     \centering
@@ -163,7 +171,7 @@ After our results and error analysis, we can revisit our hypothesis and see what
     Intersection & 4.91 & \textbf{3.68} \\ \hline
     \end{tabular}
     \caption{Performance of unsupervised ranking model to identify the entities among the candidates from different taggers, for factoid type questions in BioASQ 5b dataset}
-    \label{tab:my_label}
+    \label{tab:unsup_performance}
 \end{table}
 
 % Model	Exact Matches	Soft Matches	MRR Exact

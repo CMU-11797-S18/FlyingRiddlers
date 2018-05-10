@@ -22,12 +22,15 @@ MS MARCO dataset is intended for non-commercial research purposes only to promot
 \begin{itemize}
     \item all questions are real user queries
     \item the context passages, which answers are derived from, are extracted from real web documents
-    \item 
-\end{itemize}(a), (b) , (c) all the answers to the queries are human generated, (d) a subset of these queries has multiple answers, (e) all queries are tagged with segment information. The complexity of the query varies from category to category The v1 dev version of this dataset consists of questions whose answer type can be broadly categorized into 5 distinct categories:
+    \item all the answers to the queries are human generated
+    \item a subset of these queries has multiple answers
+    \item all queries are tagged with segment information
+\end{itemize}
+The complexity of the query varies from category to category The v1 dev version of this dataset consists of questions whose answer type can be broadly categorized into 5 distinct categories using a classifier which is trained on human labeled data:
 \begin{itemize}
-    \item NUMERIC
-    \item ENTITY
-    \item LOCATION
-    \item PERSON
-    \item DESCRIPTION (Phrase)
+    \item NUMERIC: This category constitutes of 28.14\% of the dev data and expects a numeric value as its answer. E.g.: 'xbox release data'
+    \item ENTITY: This category constitutes of 10.5\% of the dev data and expects a named entity as its answer. 
+    \item LOCATION: This category constitutes of 5.12\% of the dev data and expects a location/ place as its answer
+    \item PERSON: This category constitutes of 2.4\% of the dev data and expects a person name as an answer
+    \item DESCRIPTION (Phrase): This is the majority category of the dev data comprising of 53.8\%. The description could vary from one single line to any number of lines (no limit). E.g.: How to cook a turkey?
 \end{itemize}

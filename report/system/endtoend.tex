@@ -4,7 +4,7 @@ By an \textit{end-to-end} system, we refer to a question answering system where 
 
 \subsection{Dynamic Co-Attention Networks}
 
-For span prediction, we implement a modified variant of the Dynamic Co-Attention Network (DCN) architecture. This architecture is composed of an encoder segment and a decoder segment. The encoder segment first encodes the question and document word vectors with a bidirectional GRU. It then computes an attention both from the question text to the passage and from the passage to the question text to identify the most relevant information for each word in the passage-question pair. The computed attention over the words are fused to add contextual information to each word vector in the passage. In particular, the fusion process finds the soft dot attention from the question to the passage, from the passage to the question, and from the passage to the fused question-passage vectors:
+For span prediction, we implement a modified variant of the Dynamic Co-Attention Network (DCN) architecture \cite{DCN}. This architecture is composed of an encoder segment and a decoder segment. The encoder segment first encodes the question and document word vectors with a bidirectional GRU. It then computes an attention both from the question text to the passage and from the passage to the question text to identify the most relevant information for each word in the passage-question pair. The computed attention over the words are fused to add contextual information to each word vector in the passage. In particular, the fusion process finds the soft dot attention from the question to the passage, from the passage to the question, and from the passage to the fused question-passage vectors:
 
 \begin{align*}
 D, Q: &\text{ The passage and question matrices, where each row is a word vector} \\
@@ -35,14 +35,14 @@ The encoder architecture is presented in Figure \ref{im:enc} and the Decoder arc
 \begin{figure}[h]
     \centering
     \includegraphics[width=0.9\textwidth]{images/coattn_encoder.png}
-    \caption{The DCN Co-attention Encoder}
+    \caption{The DCN Co-attention Encoder \cite{DCN}}
     \label{im:enc}
 \end{figure}
 
 \begin{figure*}[h]
     \centering
     \includegraphics[width=0.85\textwidth]{images/decoder.png}
-    \caption{The Dynamic Decoder Network}
+    \caption{The Dynamic Decoder Network \cite{DCN}}
     \label{im:dec}
 \end{figure*}
 
@@ -51,21 +51,63 @@ The encoder architecture is presented in Figure \ref{im:enc} and the Decoder arc
 We first compute the GLoVe and CoVe word vectors for each word in the training and development data of the Stanford Question Answering Dataset (SQuAD) dataset, replacing all out of dictionary words with the zero vector. Then the network is trained with the Adam optimizer and the cross entropy loss for 40 epochs on a K80 GPU. A three-layer GRU network is used in the decoder network for all experiments, but we adjust the number of hidden units for the GRU networks that exist in the architecture. Experiments with 30, 100 and 200 hidden units per GRU are performed. An annealed learning rate initialized at 0.002 and a weight decay of 0.0001 is used during the training process. Gradient clipping is employed to prevent large gradients from destabilizing the training process, and early stopping is employed to stop training once overfitting is detected.
 
 \subsection{Results on SQuAD}
-The results on SQuAD with all the different variety of approaches we tried are presented in Table \ref{im:squad_res}. We present the results in a step by step fashion, showing how each of our modifications improves the results. We also note that we train our model for just 20 epochs compared to over 200 epochs used by the original model. Our best performing model qualifies to be ranked on the official SQuAD leader board.
+The results on SQuAD with all the different variety of approaches we tried are presented in Table \ref{tab:squad_res}. We present the results in a step by step fashion, showing how each of our modifications improves the results. We also note that we train our model for just 20 epochs compared to over 200 epochs used by the original model. Our best performing model qualifies to be ranked on the official SQuAD leader board.
 
-\begin{figure*}[h]
+%\begin{figure*}[h]
+%    \centering
+%    \includegraphics[width=0.85\textwidth]{images/res_squad.png}
+%   \caption{Results on the SQuAD dataset}
+%    \label{im:squad_res}
+%\end{figure*}
+
+%\begin{figure*}[h]
+%    \centering
+%    \includegraphics[width=0.85\textwidth]{images/res_marco.png}
+%    \caption{Results on the MSMarco v1 dataset}
+%    \label{im:res_marco}
+%\end{figure*}
+
+%it broke
+
+\begin{table}[t]
     \centering
-    \includegraphics[width=0.85\textwidth]{images/res_squad.png}
+    \begin{tabular}{|c|c|c|c|} \hline
+    \textbf{Model Configuration} & \textbf{Exact Match} & \textbf{F1 Score} & \textbf{Epochs} \\
+    \hline
+     DCN Vanilla & 57.4 & 70.6 & 20 \\ 
+     \hline
+     DCN Baseline & 66.2 & 75.9 & 200 (w/ hyperparameter \\ 
+      &  &  &  tuning) \\      \hline
+     DCN (Highway Networks) & 59.8 & 71.8 & 20 \\ 
+     \hline
+     DCN (CoVe) & 62.1 & 74.4 & 20 \\ 
+     \hline
+     DCN (ResNet encoder-decoder) & 62.0 & 74.2 & 20 \\ 
+     \hline
+     DCN (best grid search) & 62.4 & 74.5 & 20 \\ 
+     \hline
+     DCN (CoVe + Highway + & 64.8 (qualifies & 75.1 & 20 \\ 
+     deep resnet) & for SQuAD leaderboard) &  & \\ 
+    \hline
+    \end{tabular}
     \caption{Results on the SQuAD dataset}
-    \label{im:squad_res}
-\end{figure*}
+    \label{tab:squad_res}
+\end{table}
 
-\begin{figure*}[h]
+\begin{table}[t]
     \centering
-    \includegraphics[width=0.85\textwidth]{images/res_marco.png}
-    \caption{Results on the MSMarco v1 dataset}
-    \label{im:res_marco}
-\end{figure*}
+    \begin{tabular}{|c|c|c|c|} \hline
+    \textbf{Model} & \textbf{Rouge} & \textbf{Bleu} & \textbf{Set Type} \\
+    \hline
+     DCN Marco Net & 34.7 & 31.0 & Dev \\ 
+     \hline
+     DCN Marco Net & 31.30 & 23.86 & Test (Leaderboard) \\ 
+    \hline
+    \end{tabular}
+    \caption{Results on the MS Marco dataset}
+    \label{tab:squad_res}
+\end{table}
+
 
 
 An informal test is also performed with a small number of test cases not found in the data set. We find that the trained network has the capacity to answer these questions accurately as well. One out-of-dataset example is shown below:

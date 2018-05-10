@@ -36,28 +36,32 @@ With these findings, we reject our general hypothesis that a holistic QA model c
 
 \subsection{Lessons Learned}
 
-Building the two QA systems on two separate datasets involved a lot of design and implementation choices some of which, in hindsight, were sub-optimal. However, these have led us to have many insightful realizations, some of which are:
+Building the two QA systems on two separate datasets involved a lot of design and implementation choices some of which, in hindsight, were sub-optimal. However, these choices coupled with our experimental findings have led us to have many insightful realizations, some of which are:
 
 \begin{itemize}
-    \item Yes/No questions have a stronger semantic component compared to many other question types
-    \item Entailment-based tasks show high transfer learning potential
-    Even simple linear transformation for embedding works well for augmenting word embeddings
-    \item Since the yes/no answer is computed based on gross entailment statistics, the answers are less sensitive to errors in entailment
-    \item An advantage of an unsupervised classifier is that class imbalances are handled well
 
-\item Simple approaches can yield more reliable and strong results than complicated ones.
-\item For small datasets, long and in-depth dataset exploration is the key point for feature engineering (statistical biases of the origin of the data).
-\item However, it is important to not rely on specific aspects of a subset of the data. It’s easy to overfit if the features come from a bias of a subset.
-\item Models for small datasets can be extremely sensitive of feature weighting and selection. 
-\item Ranking (LeTor) approaches are strongly tied to computational power (after a certain point, pairwise is not realistic).
-
-\item The most important features might seem very trivial but works very well ( Indri, BM25 etc.) 
-\item Diversification plays an important role in removing redundancy in the summary generated
-\item Inverse relation between word limit and Rouge
-\item Dice coefficient works a tad bit better  with Indri as both are language model based.
-\item If the answer is present in single snippet, narrowing down that snippet is hard (MS Marco) 
-\item For Web search type queries, rules (PoS based) work surprisingly well as initial filter.
-\item Summary of BioASQ and Description of MS Marco are not exactly the same. Summary is a subset of Description.
+    \item Simple approaches can often yield more reliable and strong results than complicated ones. We realized that this is applicable to different question types:
+    \begin{itemize}
+        \item In case of yes/no questions, a simple linear transformation for embedding worked much better than a neural network-based non-linear transformation for augmenting word embeddings
+        \item In the case of factoid/list questions, having n-gram based candidates worked much better than having NER-based candidates
+        % \item The most important features might seem very trivial but works very well for ( Indri, BM25 etc.) 
+    \end{itemize}
+    \item A long and in-depth dataset exploration is key to building features, especially for small datasets. However, it is important to not rely on specific aspects of a subset of the data as it is easy to overfit if the features come from a biased subset of the data. We learned this lesson when analyzing the data factoid-list type questions led us to have better features and candidates
+    \item Additional computation time should be weighed against marginal performance gain. We learned this when we realized that some NER extraction techniques were far more expensive to compute than the marginal value they added to the ranking performance. This also applied to the choice of LeToR ranking algorithms where it was not feasible to efficiently fine-tune pairwise algorithms like SVMRank with a large number of answer candidates.
+    \item Models for small datasets can be extremely sensitive of feature weighting and selection. 
+    % \item Unsupervised approaches 
+    % \item Ranking (LeToR) approaches are strongly tied to computational power (after a certain point, pairwise is not realistic).
+    % \item Entailment-based tasks show high transfer learning potential
+    % Since the yes/no answer is computed based on gross entailment statistics, the answers are less sensitive to errors in entailment
+    % \item An advantage of an unsupervised classifier is that class imbalances are handled well
+    % \item 
+    \item Explicit Diversification methods need to be adapted to remove redundancy in the summary generated. This is applicable to the description category questions for any given type of dataset be it a large dataset like MS MARCO or a smaller dataset like BioASQ. The boost in ROUGE score and BLEU score we got from adapting Maximum Marginal Relevance is a strong indicator of the same.
+    \item Even for datasets of large sizes, the QA system would depend heavily on the specific domain of the dataset. For example, PoS based features perform better for question type classification in Web search compared to BioMedical domain.
+% \item Inverse relation between word limit and Rouge
+% \item Dice coefficient works a tad bit better  with Indri as both are language model based.
+% \item If the answer is present in single snippet, narrowing down that snippet is hard (MS Marco) 
+% \item For Web search type queries, rules (PoS based) work surprisingly well as initial filter.
+% \item Summary of BioASQ and Description of MS Marco are not exactly the same. Summary is a subset of Description.
 
 \end{itemize}
 

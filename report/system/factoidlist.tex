@@ -96,16 +96,37 @@ We found that using just the NER entities as the answer candidates, the classifi
 
 \subsubsection{Error Analysis And Future Work}
 
-We can divide the type of mistakes that our model makes into three different parts, as seen on ~\ref{fig:error_fl}. The first one is when the model actually achieves the correct result as one of the returned answers but the option is not exactly reflected on the answer key (Type 1). The second type of mistake is when the model fails to collect a valid reason, but one of the returned answers is very similar in structure or in semantic properties (Type 2). The third type of mistake is when our model completely fails to return an answers, not even getting close to a reasonable result.
+We can divide the type of mistakes that our model makes into three different parts, as seen on ~\ref{tab:bioasq_res}. The first one is when the model actually achieves the correct result as one of the returned answers but the option is not exactly reflected on the answer key (Type 1). The second type of mistake is when the model fails to collect a valid reason, but one of the returned answers is very similar in structure or in semantic properties (Type 2). The third type of mistake is when our model completely fails to return an answers, not even getting close to a reasonable result.
 
 Based on that, we can propose a few future directions. The first type of mistake is more related to BioASQ structure than to an actual problem on our end, the solution, therefore, should be a proper channel of communication so we could explore a wider range of alternative responses for exact answers. For the second type of error, there are a few approaches that could significantly improve the model. The first one is to identify likely semantic clusters where the answer could be and create more alternatives based on that. For instance, a wrong answer consisting of 'loss memory' could become a group of 'memory of loss', 'memory loss' and 'loss of memory' combinations. Another alternative would be to use our abstraction summarization model to combine the important information from the top 5 answers and create new related responses based on that. For the third type of mistake, one interesting alternative would be to use some heuristics in order to reduce the number of candidates for each questions. For example, a query about 'which gene' should only have genes as candidates. The motivation is that with less possible candidates, the model would be able to rank them properly.
 
-\begin{figure}
-    \centering
-    \includegraphics[scale=0.4]{images/error_fl.png}
+%\begin{figure}
+%    \centering
+%    \includegraphics[scale=0.5]{images/flerror.png}
+%    \caption{Error Analysis for factoid/list}
+%    \label{fig:error_fl}
+%\end{figure}
+
+\begin{table}
+\centering
+\begin{tabular}{|c|c|c|c|}
+    \hline \hline
+    & Type 1 & Type 2 & Type 3\\
+    \hline
+     Question & Which is the most prevalent form of arrhythmia worldwide?
+& what memory problems are reported in the " gulf war syndrome"?
+ what is the inheritance pattern of li–fraumeni syndrome?\\
+     \hline
+     Gold Answer &  [u'atrial fibrilation', u'af']
+& [u'memory loss'] & [u'autosomal dominant'] \\
+     \hline
+     Our answer(s) & DCN MarcoNet& 0.11&0.07\\
+    \hline \hline
+\end{tabular}
     \caption{Error Analysis for factoid/list}
-    \label{fig:error_fl}
-\end{figure}
+    \label{tab:bioasq_res}
+\end{table}
+
 
 
 \subsubsection{Hypotheses Confirmation/Revision}
@@ -151,4 +172,3 @@ After our results and error analysis, we can revisit our hypothesis and see what
 % Gram CNN	0.98%	85.53%	0.24%
 % Ensemble Union	1.05%	85.29%	0.38%
 % Ensemble Intersection	4.91%	39.47%	3.68%
-

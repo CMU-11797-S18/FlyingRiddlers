@@ -1,6 +1,11 @@
 \subsection{Summary Type Questions}
 \label{approach1}
-This section describes our efforts to address the ideal answer category on BioASQ. % where the goal is to produce a query-based, relevant, non redundant and coherent summary answer from multiple snippets and documents. 
+This section describes our efforts to address the ideal answer category on BioASQ along with the description type category of MS MARCO. % where the goal is to produce a query-based, relevant, non redundant and coherent summary answer from multiple snippets and documents. 
+We proceeded with this answer type category with the specific hypothesis in mind. They are:
+\begin{itemize}
+\item Hypothesis 1: A QA system that provides accurate, non-repetitive answers must be supported by a strong Information Retrieval system.
+\item Hypothesis 2: Human readability is a harder problem to tackle with. Abstractive methods perform better on this front than the extractive methods	\end{itemize}
+
 
  \begin{figure*}
      \centering
@@ -40,7 +45,7 @@ where, $\lambda$ is the coefficient for linear interpolation based smoothing tha
 
 In equation \ref{eq2}, $\mu$ is parameter for Bayesian smoothing using Dirichlet priors used for sentence length normalization. Since sentences of snippets can be of varying lengths, after tuning, the best value of $\mu$ is attained at 5000.
 
-% Both of the above smoothing techniques do two different things, the mixture model (interpolation) compensates for differences in the word importance (gives idf-effects) and the Dirichlet prior improves the estimates of the sentence sample which supports our decision to use two stage smoothing. 
+Both of the above smoothing techniques do two different things, the mixture model (interpolation) compensates for differences in the word importance (gives idf-effects) and the Dirichlet prior improves the estimates of the sentence sample which supports our decision to use two stage smoothing. 
 
 % \subsubsection{LeToR}
 
@@ -61,29 +66,33 @@ Once the top most relevant snippets have been chosen, we want to choose sentence
 
 We use the Maximum Marginal Relevance (MMR) algorithm \cite{MMR} as the baseline for sentence selection. In contrast to the basic Jaccard similarity metric used in previous work \cite{khyati-paper}, we experimented with other similarity measures which consistently perform better than the Jaccard baseline. MMR ensures the selected set contains non-redundant yet complete information. The sentences are selected based on two aspects, the sentence's relevance to the question and how different it is to the already selected sentences. At each step we select a document to append to the ranking based on the equation below.
 \vspace{-0.3cm}
-\begin{multline}
-     d_i = \argmax_{d_j\in R \setminus S} (\lambda \cdot sim(q, d_i)  \\  - (1 - \lambda) \cdot max\limits_{d \in \mathcal{S}}(sim_{sent}(d_i, d_j) ) ) \label{eq4}
-\end{multline}
+\begin{equation}
+     d_i = \argmax_{d_j\in R \setminus S} (\lambda \cdot sim(q, d_i)  - (1 - \lambda) \cdot max\limits_{d \in \mathcal{S}}(sim_{sent}(d_i, d_j) ) ) \label{eq4}
+\end{equation}
    
 
  We define a custom similarity metric between documents which uses positional values of sentences from the initial ranking as follows:
  \vspace{-0.3cm}
-\begin{multline}
-  sim_{sent}(di, dj) = ( 1 - \beta) \cdot (1 - \frac{rank(s_i)}{n}) \\+ \beta \cdot sim(d_i, d_j) 
-\end{multline}
+\begin{equation}
+  sim_{sent}(di, dj) = ( 1 - \beta) \cdot (1 - \frac{rank(s_i)}{n}) + \beta \cdot sim(d_i, d_j) 
+\end{equation}
 Here, $sim_{sent}(di, dj)$ is the sentence to sentence similarity, $sim(q, di)$  is the question - sentence similarity, $rank(s_i)$ is the rank of the snippet which contains the sentence $d_i$, $S$ are Sentences already selected for summary i.e. which are ranked above this position. In the above equation, we tried various metrics to account for the sentence to sentence similarity. In cases where $\beta$ is non-zero, equation \ref{eq4} is identified as our SoftMMR which includes soft scoring based on sentence position.
 
 \subsubsection{Dice's similarity Coefficient (DSC)}
 
 Dice's similarity Coefficient (DSC) \cite{dice} is a quotient of similarity between two samples and ranges between 0 and 1 calculated as
-% It is used to compare similarity of two strings using bigrams. It is different from the Jaccard coefficient which counts intersecting words only once in both the numerator and denominator. 
+It is used to compare similarity of two strings using bigrams. It is different from the Jaccard coefficient which counts intersecting words only once in both the numerator and denominator. 
 
 \begin{equation*}
-    dsc = (2 * n_t) / (n_x + n_y)
+    dsc = \frac{(2 * n_t)}{ (n_x + n_y)}
 \end{equation*}
 where $n_t$ is the number of character bigrams found in both strings, $n_x$ is number of bigrams in string $x$ and $n_y$ is the number of bigrams in string $y$.
-\subsection{\textbf{Evaluation}} The pipeline described above is primarily designed to improve the ROUGE evaluation metric \cite{Rougue}. Although a higher ROUGE score does not necessarily reflect improved human readability, MMR can improve readability by reducing redundancy in generated answers.
-Results for ideal answers for Task 5 phase b are shown in Table \ref{tab:rouge_extractive_summarization}. We also compare our results with other state of the art approaches in Table \ref{tab:comparison_results}.
+\subsection{\textbf{Evaluation}}
+\subsubsection{BioASQ} 
+The pipeline described above is primarily designed to improve the ROUGE evaluation metric \cite{Rougue}. Although a higher ROUGE score does not necessarily reflect improved human readability, MMR can improve readability by reducing redundancy in generated answers.
+Results for ideal answers for Task 5 phase b for BioASQ dataset are shown in Table \ref{tab:rouge_extractive_summarization}. We also compare our results with other state of the art approaches in Table \ref{tab:comparison_results}.
+\subsubsection{MS MARCO}
+Now coming to the MS MARCO description dataset, the same pipeline couldn't be applied as is. The main difference being the average length of the description type answers. As mentioned in the dataset statistics, considering the number of sentences and average sentence length, we changed the number of words in summary from 200 to 20-25. That significantly improved our Bleu. Also, please note that we have performed the experiments on a smaller sample of the data. The results for description type questions are seen in the table \ref{#todo}
 
 \begin{table}[t!]
     \centering
@@ -110,4 +119,3 @@ Results for ideal answers for Task 5 phase b are shown in Table \ref{tab:rouge_e
     \caption{ROUGE scores for different experiments on similarity metrics for extractive summarization}
     \label{tab:rouge_extractive_summarization}
 \end{table}
-

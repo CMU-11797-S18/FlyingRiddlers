@@ -30,7 +30,7 @@ e_t: &\text{ The probability vector for the location of the start marker at iter
 This iterative procedure enables the model to recover from initial local maxima corresponding to incorrect answers. This alleviates one of the major issues with question answering systems where they fail to make iterative refinements to the answer based on the context they learn. The traditional systems also fail to learn transitive relations for example they fail to identify the subjects which certain pronouns correspond to due to their single pass answer generation nature. On the other hand, the dynamic pointing encoder can resolve such relationships as it scans through the encoded passage vectors to predict the start and end markers.\\
 
 \subsubsection{Network Architecture}
-The encoder architecture is presented in Image \ref{im:enc} and the Decoder architecture for DCN is presented in Image \ref{im:dec}.
+The encoder architecture is presented in Figure \ref{im:enc} and the Decoder architecture for DCN is presented in Figure \ref{im:dec}.
 
 \begin{figure}[h]
     \centering
@@ -90,7 +90,7 @@ Free Form answer generation is a relatively unexplored problem with little exist
 
 Natural Language generation is known to be one of the hardest problems on the NLP community due to the inability of modern day architectures to model long term context and generate syntactic and semantically coherent sentences. One of the primary issues we notice with such architecture is the ineffectiveness of the loss functions typically used in the seq2seq prediction networks typically used for this task. The seq2seq networks are usually based on LSTM encoder - decoder style architectures and typically penalize the generator using a cross entropy loss between the predicted and expected output word. Such work level loss metrics fail to capture global sentence level dynamics and completely miss out on enforcing syntactic and semantic coherence. We propose a novel loss metric here which we feel would be greatly useful in dealing with such issues.\\
 
-First we introduce our generator network architecture. The architecture we propose is shown in Image \ref{im:im_gen}.
+First we introduce our generator network architecture. The architecture we propose is shown in Figure \ref{im:im_gen}.
 \begin{figure*}[h]
     \centering
     \includegraphics[width=0.85\textwidth]{images/ans_net.png}
@@ -139,13 +139,14 @@ To predict the next word we use the present decoder state, the question and pass
 
 
 \subsection{Results on MS MARCO}
-We use our free form answer generation network on the MSMarco V1 dataset. The results for the same are listed in Image \ref{im:res_marco}. We note that we are listed as one of the highest ranked single model on the actual MSMarco leaderboard.
+We use our free form answer generation network on the MSMarco V1 dataset. The results for the same are listed in Table \ref{im:res_marco}. We note that we are listed as one of the highest ranked single model on the actual MSMarco leaderboard.
 
 \subsection{Experiments and Results on BioASQ dataset}
 
 We further extend our model to evaluate it on the BioASQ dataset. We use our DCN model to perform the QA task on the BioASQ dataset. Presently, we only work with factoid and list type of questions. The architecture is exactly the same as the DCN encoder. In place of the decoder we simply use the attention values over the passage to predict our answers. For both factoid and list type questions, the passage entities which attain attention more than a threshold are chosen as the correct answers. For the Factoid type answers, as the ranking of these entities also matters we return them in the order of decreasing attention weights. The results of this model evaluated on the BioASQ dataset after pre-training on the SQuAD dataset are presented in Table \ref{tab:bioasq_res}. Note that presently the model uses word2vec and Cove embeddings and hence several of the Biological entities are actually not a part of the vocabulary which may partially explain the poor performance of the DCN model on the BioASQ dataset.
 
 \begin{table}
+\centering
 \begin{tabular}{|c|c|c|}
     \hline \hline
     Model & Factoid(MRR) & List(F1)\\

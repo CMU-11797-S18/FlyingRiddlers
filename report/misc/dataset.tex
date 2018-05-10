@@ -18,3 +18,16 @@ We deal with the Phase B of the challenge which deals with large scale biomedica
 The dataset expected the participants to generate two types of answers, namely, exact and ideal answers. In ideal answers, the systems are expected to generate a well formed paragraph for each of the question types which explains the answer to the question. They call these answers `ideal' because it is what a human would expect as an answer by a peer biomedical scientist. In the exact answers the systems are expected to generate ``yes" or ``no" in the case of yes/no questions, named entities in the case of factoid questions and list of named entities in the case of list questions.
 
 \subsection{MS MARCO}
+MS MARCO dataset is intended for non-commercial research purposes only to promote advancement in the field of artificial intelligence and related areas. In MS MARCO, all questions are sampled from real anonymized user queries. The context passages, from which answers in the dataset are derived, are extracted from real web documents using the most advanced version of the Bing search engine.The answers to the queries are human generated. Finally, a subset of these queries has multiple answers.Compared to previous publicly available datasets, this dataset is unique in the sense that
+\begin{itemize}
+    \item all questions are real user queries
+    \item the context passages, which answers are derived from, are extracted from real web documents
+    \item 
+\end{itemize}(a), (b) , (c) all the answers to the queries are human generated, (d) a subset of these queries has multiple answers, (e) all queries are tagged with segment information. The complexity of the query varies from category to category The v1 dev version of this dataset consists of questions whose answer type can be broadly categorized into 5 distinct categories:
+\begin{itemize}
+    \item NUMERIC
+    \item ENTITY
+    \item LOCATION
+    \item PERSON
+    \item DESCRIPTION (Phrase)
+\end{itemize}

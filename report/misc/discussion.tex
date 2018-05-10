@@ -1,5 +1,4 @@
-
-\begin{table*}[t!]
+\begin{table*}[h]
     \centering
     \begin{tabular}{|c|c|c|c|c|} 
     \hline \hline
@@ -19,20 +18,73 @@
     \hline \hline
     
     \end{tabular}
-    \caption{Comparison of our model with other state of the art approaches}
+    \caption{Comparison of our question-type based QA model with other state of the art approaches on BioASQ 5b dataset}
     \label{tab:comparison_results}
 \end{table*}
-\vspace{-0.3cm}
 
+\section{Discussion}
 
+In this section, we shall analyze our gross findings from building the two QA systems and experimenting on both the datasets. Having built a broad set of classifiers and modules, we also comment on our experiences in building these systems while highlighting our key learning from these experiences. 
 
-Our key novel contributions in this paper are:
-\begin{enumerate}
-    \item \textbf{State of the art result on ideal answer questions}: Our proposed \textit{BioAMA} system attains state of the art results in automatic evaluation measures for the ideal answer questions in Task 5b of the BioASQ dataset, yielding a 7\%  improvement over the previous state of the art system \cite{khyati-paper}.
-    \item \textbf{Novel framework for Yes/No type QA}: 
-    We introduce a novel NLI-based approach for answering the Yes/No style questions in the BioASQ dataset. We model these questions as a Textual Entailment (TE) problem and use Hierarchical Convolutional Neural Network based Infersent models \cite{Infersent} to answer this type of question. To address the challenge of inadequate training data, we also introduce a novel embedding projection technique which allows for effective transfer learning from models trained on larger datasets with a different vocabulary to work on the much smaller BioASQ dataset.
-    \item \textbf{A novel two-stage approach to answer Factoid and List type questions}: 
-    By using an ensemble of biomedical NER taggers to generate a candidate answer set, we devise unsupervised and supervised ranking algorithms to generate the final predictions.
-    \item \textbf{Improved Maximum Marginal Relevance (MMR) framework}: We improve upon the MMR framework for relevant sentence selection from the chosen snippets. The use of MMR for sentence selection was introduced in the work of Chandu et al. \shortcite{khyati-paper}. We improve upon this framework by experimenting with a number of more informative similarity metrics to replace and improve upon the baseline Jaccard similarity metric.
+\subsection{Model Comparison}
 
-\end{enumerate}
+The question-type based QA system that we built performs remarkably well on the BioASQ. This can be noted from the Table \ref{tab:comparison_results}, where we compare our system with the state of the art systems on BioASQ. We can see that our system performs the best on Ideal Answers and is very close to the best performances on Exact Answers. The trends are very similar for BioASQ 6b as well, indicating that a question-type based system is very effective for BioASQ. However, our end-to-end system fails to perform well on the BioASQ, as shown in Table \ref{tab:bioasq_res}, which leads us to the conclusion that for smaller datasets, a question-type based modular system is typically a much better choice of QA system.
+
+On the other hand, we note that the end-to-end systems that we proposed has much better performances on the large datasets such as MS MARCO and SQuAD at the ranks of some of the state-of-the-art systems, while our modular question-type based system fails to yield to similar performance. This should not be surprising, since our end-to-end QA system is heavily parametrized and a lot more capable, and having a large dataset would help us efficiently train the model. In the cases of smaller datasets, however, we would have to aid the model with inductive biases, and constrain it with very few parameters to strike a trade off between efficient training and optimal performance. 
+
+With these findings, we reject our general hypothesis that a holistic QA model can be trained to yield consistently high performances across multiple datasets, and conclude that a well performing QA system would have to be carefully chosen with the size and domain of the dataset as key considerations.
+
+\subsection{Lessons Learned}
+
+Building the two QA systems on two separate datasets involved a lot of design and implementation choices some of which, in hindsight, were sub-optimal. However, these have led us to have many insightful realizations, some of which are:
+
+\begin{itemize}
+    \item Yes/No questions have a stronger semantic component compared to many other question types
+    \item Entailment-based tasks show high transfer learning potential
+    Even simple linear transformation for embedding works well for augmenting word embeddings
+    \item Since the yes/no answer is computed based on gross entailment statistics, the answers are less sensitive to errors in entailment
+    \item An advantage of an unsupervised classifier is that class imbalances are handled well
+
+\item Simple approaches can yield more reliable and strong results than complicated ones.
+\item For small datasets, long and in-depth dataset exploration is the key point for feature engineering (statistical biases of the origin of the data).
+\item However, it is important to not rely on specific aspects of a subset of the data. It’s easy to overfit if the features come from a bias of a subset.
+\item Models for small datasets can be extremely sensitive of feature weighting and selection. 
+\item Ranking (LeTor) approaches are strongly tied to computational power (after a certain point, pairwise is not realistic).
+
+\item The most important features might seem very trivial but works very well ( Indri, BM25 etc.) 
+\item Diversification plays an important role in removing redundancy in the summary generated
+\item Inverse relation between word limit and Rouge
+\item Dice coefficient works a tad bit better  with Indri as both are language model based.
+\item If the answer is present in single snippet, narrowing down that snippet is hard (MS Marco) 
+\item For Web search type queries, rules (PoS based) work surprisingly well as initial filter.
+\item Summary of BioASQ and Description of MS Marco are not exactly the same. Summary is a subset of Description.
+
+\end{itemize}
+
+\section{Individual Contributions}
+
+By virtue of having a tightly integrated system that was built collaboratively, we have had to work very closely with each other on almost all the modules involved. Though we all weighed in for the design and analysis of the systems, each one of us also assumed primary responsibility for implementation of specific parts of the system, which have been tabulated in Table \ref{tab:contributions}.
+
+\begin{table}[h]
+    \centering
+    \begin{tabular}{c|c|c|c|c} \hline
+    Team Member & Yes/No Type & Factoid/List Type & Ideal Answers & End-to-end System \\ \hline \hline
+    Nitish & \checkmark & \checkmark & & \\
+    Gabriel & & \checkmark & \checkmark & \\
+    Pranavi & & \checkmark & \checkmark & \\
+    Vasu & \checkmark & & & \checkmark \\ \hline
+    \end{tabular}
+    \caption{Key contributions from individual members of the team}
+    \label{tab:contributions}
+\end{table}
+
+% Our key novel contributions in this paper are:
+% \begin{enumerate}
+%     \item \textbf{State of the art result on ideal answer questions}: Our proposed \textit{BioAMA} system attains state of the art results in automatic evaluation measures for the ideal answer questions in Task 5b of the BioASQ dataset, yielding a 7\%  improvement over the previous state of the art system \cite{khyati-paper}.
+%     \item \textbf{Novel framework for Yes/No type QA}: 
+%     We introduce a novel NLI-based approach for answering the Yes/No style questions in the BioASQ dataset. We model these questions as a Textual Entailment (TE) problem and use Hierarchical Convolutional Neural Network based Infersent models \cite{Infersent} to answer this type of question. To address the challenge of inadequate training data, we also introduce a novel embedding projection technique which allows for effective transfer learning from models trained on larger datasets with a different vocabulary to work on the much smaller BioASQ dataset.
+%     \item \textbf{A novel two-stage approach to answer Factoid and List type questions}: 
+%     By using an ensemble of biomedical NER taggers to generate a candidate answer set, we devise unsupervised and supervised ranking algorithms to generate the final predictions.
+%     \item \textbf{Improved Maximum Marginal Relevance (MMR) framework}: We improve upon the MMR framework for relevant sentence selection from the chosen snippets. The use of MMR for sentence selection was introduced in the work of Chandu et al. \shortcite{khyati-paper}. We improve upon this framework by experimenting with a number of more informative similarity metrics to replace and improve upon the baseline Jaccard similarity metric.
+
+% \end{enumerate}

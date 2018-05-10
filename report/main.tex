@@ -17,6 +17,7 @@
 \usepackage{float}
 \usepackage{subcaption}
 \usepackage{graphicx}
+\usepackage{tikz}
 
 \usepackage{caption}
 \DeclareCaptionFont{blue}{\color{LightSteelBlue3}}
@@ -24,6 +25,8 @@
 
 \DeclareMathOperator*{\argmin}{arg\,min}
 \DeclareMathOperator*{\argmax}{arg\,max}
+
+\def\checkmark{\tikz\fill[scale=0.4](0,.35) -- (.25,0) -- (1,.7) -- (.25,.15) -- cycle;} 
 
 \date{May 9, 2018}
 \title{
@@ -53,6 +56,7 @@ Team: The Flying Riddlers
 \input{system/ideal}
 \input{system/endtoend}
 
+\input{misc/discussion}
 \input{misc/conclusion}
 
 \bibliography{references}
